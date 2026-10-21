@@ -180,6 +180,9 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
               <a href="#plataforma" className="transition-colors hover:text-[#111111]">
                 Plataforma
               </a>
+              <a href="#galeria" className="transition-colors hover:text-[#111111]">
+                Interfaces Stitch
+              </a>
               <a href="#mobilidade" className="transition-colors hover:text-[#111111]">
                 Mobilidade &amp; PostGIS
               </a>
@@ -480,6 +483,108 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
               >
                 {isAuthenticatedManager ? "Ir para o Painel" : "Acessar Painel"}
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 0.5: STITCH GENERATED INTERFACE GALLERY */}
+        <section id="galeria" data-scroll-section className="mx-auto mb-[160px] max-w-[1280px] px-6 md:px-8">
+          <div data-scroll-item className="mb-8 flex items-center gap-4">
+            <span className="label-caps rounded-full bg-[#E5E2E1] px-3.5 py-1.5 text-[#111111]">
+              Galeria de Interfaces · Auralis Visual Scaffolding
+            </span>
+            <div className="h-px flex-grow bg-[#E7E7E4]" />
+          </div>
+
+          <div data-scroll-item className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <h2 className="text-[36px] leading-[1.08] font-semibold tracking-[-0.03em] sm:text-[48px]">
+                Visão completa do ecossistema Web e Mobile.
+              </h2>
+            </div>
+            <div className="flex items-end lg:col-span-5">
+              <p className="text-[17px] leading-[1.6] text-[#6B6B6B]">
+                Telas projetadas no sistema de design <strong className="font-medium text-[#111111]">Auralis</strong>{" "}
+                combinando o Portal do Gestor de Mobilidade (BI, PostGIS, Zeladoria 30m e Recompensas) com o aplicativo
+                Flutter utilizado pela comunidade acadêmica.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            {/* Desktop Screen 1: BI & PostGIS Map */}
+            <div
+              data-scroll-item
+              className="flex flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#FCFCFB] p-6 lg:col-span-8"
+            >
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <span className="label-caps text-emerald-800">Portal Web · Visão Geral BI &amp; PostGIS</span>
+                  <h3 className="mt-1 text-xl font-semibold tracking-tight">
+                    Monitoramento Espacial, Divisão Modal e InsightEngine IA
+                  </h3>
+                </div>
+                <span className="label-caps rounded-full border border-[#E7E7E4] bg-[#F3F2EF] px-3 py-1 text-[#111111]">
+                  Desktop · 12 Colunas
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-[#E7E7E4] bg-[#F3F2EF]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/stitch/bi-dashboard.png"
+                  alt="EcoMove — Painel de Business Intelligence e Mapa Geoespacial PostGIS"
+                  className="h-auto w-full object-cover object-top transition-transform duration-500 hover:scale-[1.02]"
+                />
+              </div>
+            </div>
+
+            {/* Mobile Screen: Flutter App */}
+            <div
+              data-scroll-item
+              className="flex flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#F3F2EF] p-6 lg:col-span-4"
+            >
+              <div className="mb-5">
+                <span className="label-caps text-emerald-800">App Mobile Flutter · Commuter</span>
+                <h3 className="mt-1 text-xl font-semibold tracking-tight">
+                  Rastreamento GPS, Carpool QR &amp; Carteira EcoPoints
+                </h3>
+              </div>
+              <div className="mx-auto max-w-[290px] overflow-hidden rounded-[24px] border border-[#E7E7E4] bg-[#FCFCFB] shadow-xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/stitch/mobile-commuter.png"
+                  alt="EcoMove Campus — Aplicativo Mobile Flutter"
+                  className="h-auto w-full object-cover object-top"
+                />
+              </div>
+            </div>
+
+            {/* Desktop Screen 2: Zeladoria 30m & Rewards */}
+            <div
+              data-scroll-item
+              className="flex flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#FCFCFB] p-6 lg:col-span-12"
+            >
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <span className="label-caps text-emerald-800">
+                    Portal Web · Zeladoria Cidadã (ST_DWithin 30m) &amp; Ledger Imutável
+                  </span>
+                  <h3 className="mt-1 text-xl font-semibold tracking-tight">
+                    Fila de Validação de Ocorrências (+25 EcoPoints), Catálogo de Parceiros e Estorno em 7 Dias
+                  </h3>
+                </div>
+                <span className="label-caps rounded-full border border-[#E7E7E4] bg-[#F3F2EF] px-3 py-1 text-[#111111]">
+                  Moderação &amp; Economia
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-[#E7E7E4] bg-[#F3F2EF]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/stitch/zeladoria-recompensas.png"
+                  alt="EcoMove — Central de Zeladoria Urbana e Catálogo de Recompensas"
+                  className="max-h-[760px] w-full object-cover object-top transition-transform duration-500 hover:scale-[1.01]"
+                />
+              </div>
             </div>
           </div>
         </section>

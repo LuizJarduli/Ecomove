@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoMove Campus — Usuária da Mobilidade</title>
+<!-- Material Symbols Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Geist and JetBrains Mono Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration matching Design System & Visual Tokens -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed-variant": "#005236",
+            "inverse-primary": "#c8c6c5",
+            "surface-variant": "#e2e3e1",
+            "on-tertiary-fixed": "#07006c",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#858383",
+            "inverse-on-surface": "#f1f1ef",
+            "on-surface": "#1a1c1b",
+            "on-secondary-fixed": "#002113",
+            "secondary-fixed": "#6ffbbe",
+            "tertiary": "#000000",
+            "tertiary-container": "#07006c",
+            "outline-variant": "#c4c7c7",
+            "on-surface-variant": "#444748",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#1c1b1b",
+            "primary-container": "#1c1b1b",
+            "secondary": "#006c49",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "surface-dim": "#dadad8",
+            "surface-container-low": "#f4f4f2",
+            "surface-container-high": "#e8e8e6",
+            "secondary-fixed-dim": "#4edea3",
+            "secondary-container": "#6cf8bb",
+            "primary": "#000000",
+            "error-container": "#ffdad6",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#e2e3e1",
+            "surface": "#f9f9f7",
+            "on-primary-fixed-variant": "#474646",
+            "surface-bright": "#f9f9f7",
+            "outline": "#747878",
+            "background": "#f9f9f7",
+            "primary-fixed": "#e5e2e1",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "on-tertiary-container": "#7073ff",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#5f5e5e",
+            "surface-container": "#eeeeec",
+            "primary-fixed-dim": "#c8c6c5",
+            "tertiary-fixed": "#e1e0ff",
+            "on-secondary": "#ffffff",
+            "on-background": "#1a1c1b",
+            "on-secondary-container": "#00714d",
+            "on-error": "#ffffff",
+            "inverse-surface": "#2f3130"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-compact": "0.5rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem",
+            "margin-desktop": "2rem",
+            "space-lg": "1.25rem",
+            "space-xl": "2rem",
+            "margin": "1.5rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Geist", "sans-serif"],
+            "headline-xl": ["Geist", "sans-serif"],
+            "headline-sm": ["Geist", "sans-serif"],
+            "headline-lg": ["Geist", "sans-serif"],
+            "code-sm": ["JetBrains Mono", "monospace"],
+            "body-md": ["Geist", "sans-serif"],
+            "body-sm": ["Geist", "sans-serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "label-md": ["Geist", "sans-serif"],
+            "headline-xl-mobile": ["Geist", "sans-serif"],
+            "headline-md": ["Geist", "sans-serif"]
+          },
+          "fontSize": {
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "code-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary-container selection:text-on-secondary-container font-body-md">
+<!-- Mobile Viewport Frame (iOS / Android Flutter Scaffold) -->
+<div class="w-full max-w-md bg-surface min-h-screen flex flex-col relative pb-24 overflow-x-hidden border-x border-outline-variant/30">
+<!-- Top Status Bar & System Header -->
+<header class="bg-surface/90 backdrop-blur-md sticky top-0 z-40 px-4 pt-3 pb-2.5 flex justify-between items-center w-full max-w-md mx-auto">
+<div class="flex items-center space-x-2.5">
+<!-- Avatar with active status dot -->
+<div class="relative w-9 h-9 rounded-full ring-1 ring-outline-variant/50 overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A refined portrait photograph of a young Brazilian female engineering student with warm skin tone, dark hair tied back neatly, wearing minimal technical attire. The scene is illuminated by crisp, soft natural light against a neutral architectural concrete wall in an editorial academic environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7ZzrJ8y2sJOzepCP4BuZGMfPInMUk09Oge1n6wWtl8cg-HfytPZGTxiNozrpeZHFJDigYDinlUiKruGn1hHEhi1JexIcqR2RGfyOgzQFDEMo81e61TfPEO1_CQtDfsLTFuiQtoLUuk9S2eoPSseXsnGKUsMxDeTJ42ZEo-LhMtDtC45pvnb4-J0lYAfI54PX_qG1f7abv6X9m_hOl153uvIFtP8IV3G9A2oddjrtSe-EsuTqdRnHvIlw1fNcr4AFtpHduiUaYXXW4"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-secondary rounded-full ring-2 ring-surface"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center space-x-1.5">
+<span class="text-headline-sm font-headline-sm font-semibold tracking-tight text-on-surface">EcoMove Campus</span>
+<span class="text-body-sm font-body-sm text-secondary font-medium">· FACENS</span>
+</div>
+<div class="flex items-center space-x-1">
+<span class="text-body-sm font-body-sm text-on-surface-variant">Beatriz</span>
+<span class="text-label-sm font-label-sm text-outline-variant">·</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">RA 210482</span>
+</div>
+</div>
+</div>
+<!-- Action Pill: Points & Institutional Status -->
+<div class="flex items-center space-x-1.5 bg-surface-container-lowest px-2.5 py-1 rounded-full border border-outline-variant/40 shadow-sm">
+<span class="material-symbols-outlined text-secondary text-base leading-none" data-icon="energy_savings_leaf">energy_savings_leaf</span>
+<span class="text-label-sm font-label-sm font-semibold text-primary">1.240 pts</span>
+</div>
+</header>
+<!-- Main Content Stage -->
+<main class="flex-1 px-4 pt-2 space-y-3.5">
+<!-- Student Credentials & Live Carbon Wallet -->
+<section class="bg-surface-container-lowest rounded-2xl p-3.5 border border-outline-variant/40 space-y-3">
+<div class="flex items-center justify-between">
+<div class="space-y-0.5">
+<p class="text-label-sm font-label-sm text-on-surface-variant">Campus Universitário</p>
+<h2 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">Olá, Beatriz · @facens.br</h2>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary-fixed/30 text-on-secondary-fixed-variant border border-secondary-fixed-dim/40">
+            Eng. Computação
+          </span>
+</div>
+<!-- Telemetry Data Strip: EcoPoints + Carbon Avoidance -->
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-outline-variant/30">
+<div class="flex items-center space-x-2.5 bg-surface-container-low/80 p-2 rounded-xl">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs">
+<span class="material-symbols-outlined text-lg" data-icon="toll">toll</span>
+</div>
+<div>
+<span class="text-code-sm font-code-sm text-on-surface-variant block leading-tight">SALDO ATIVO</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">640 pts</span>
+</div>
+</div>
+<div class="flex items-center space-x-2.5 bg-surface-container-low/80 p-2 rounded-xl">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary shadow-xs">
+<span class="material-symbols-outlined text-lg" data-icon="eco">eco</span>
+</div>
+<div>
+<span class="text-code-sm font-code-sm text-on-surface-variant block leading-tight">CO₂ EVITADO</span>
+<span class="text-headline-sm font-headline-sm text-secondary font-semibold tracking-tight">18,4 kg</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Mode Selector Horizontal Reel -->
+<section class="space-y-2">
+<div class="flex items-center justify-between px-0.5">
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-on-surface-variant">Modos de Transporte</span>
+<span class="text-code-sm font-code-sm text-secondary font-medium">GPS ATIVO</span>
+</div>
+<div class="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
+<!-- Active Mode: Bicicleta -->
+<button class="flex-shrink-0 flex items-center space-x-2 px-3 py-2 rounded-xl bg-surface-container-lowest border-2 border-secondary text-on-surface shadow-xs transition-transform active:scale-95">
+<div class="w-6 h-6 rounded-md bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-base" data-icon="directions_bike">directions_bike</span>
+</div>
+<div class="text-left">
+<div class="flex items-center space-x-1">
+<span class="text-body-md font-body-md font-semibold text-primary">Bicicleta</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+</div>
+<span class="text-code-sm font-code-sm text-secondary font-medium">8 pts/km · Ativo</span>
+</div>
+</button>
+<!-- Caminhada -->
+<button class="flex-shrink-0 flex items-center space-x-2 px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container transition-colors active:scale-95">
+<div class="w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-base" data-icon="directions_walk">directions_walk</span>
+</div>
+<div class="text-left">
+<span class="text-body-md font-body-md font-medium text-on-surface block">Caminhada</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">10 pts/km</span>
+</div>
+</button>
+<!-- Carona QR -->
+<button class="flex-shrink-0 flex items-center space-x-2 px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container transition-colors active:scale-95">
+<div class="w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-base" data-icon="group">group</span>
+</div>
+<div class="text-left">
+<span class="text-body-md font-body-md font-medium text-on-surface block">Carona QR</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">5 pts/km</span>
+</div>
+</button>
+<!-- Ônibus / BRT -->
+<button class="flex-shrink-0 flex items-center space-x-2 px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container transition-colors active:scale-95">
+<div class="w-6 h-6 rounded-md bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-base" data-icon="directions_bus">directions_bus</span>
+</div>
+<div class="text-left">
+<span class="text-body-md font-body-md font-medium text-on-surface block">Ônibus</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">4 pts/km</span>
+</div>
+</button>
+</div>
+<!-- Quick Access Carpool Action Bar -->
+<div class="flex items-center justify-between bg-primary-container text-on-primary px-3 py-2 rounded-xl border border-outline-variant/20 shadow-xs">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary-fixed text-lg" data-icon="qr_code_2">qr_code_2</span>
+<div>
+<span class="text-label-sm font-label-sm text-inverse-primary block">CarpoolSession Ativa</span>
+<span class="text-code-sm font-code-sm text-on-primary">Código PIN: #4829</span>
+</div>
+</div>
+<button class="px-2.5 py-1 bg-surface-container-lowest text-primary rounded-lg text-label-sm font-label-sm font-semibold active:scale-95 transition-transform flex items-center space-x-1">
+<span class="material-symbols-outlined text-sm" data-icon="document_scanner">document_scanner</span>
+<span>Scan QR</span>
+</button>
+</div>
+</section>
+<!-- Geospatial Workstation Canvas (PostGIS / Campus Geofence) -->
+<section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/40 overflow-hidden relative shadow-xs">
+<!-- Interactive Map Header & Geofence Status -->
+<div class="px-3.5 py-2.5 bg-surface-container-lowest/90 backdrop-blur-sm border-b border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="text-label-sm font-label-sm font-semibold text-on-surface">CampusZone Geofence</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">ST_Contains</span>
+</div>
+<span class="text-code-sm font-code-sm text-on-surface-variant">Rod. Senador Ermírio de Moraes</span>
+</div>
+<!-- Geospatial Canvas with Visual Vectors -->
+<div class="relative w-full h-56 bg-surface-container overflow-hidden">
+<!-- Stylized Minimal Map Background -->
+<div class="w-full h-full bg-cover bg-center opacity-85" data-alt="A clean architectural 2D vector map layout in neutral light grey and white tones representing a high-tech modern university campus with crisp boundary roads, green cycling corridors, and sleek structural geometry. The aesthetic is ultra-minimalist, editorial Japanese print style, with emerald highlights tracing bike paths." data-location="Sorocaba" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCK6EfkS-_yWVLrdIMfLcPz9coPZDvOgWlPLp1XaNoxb30ihSr_ERLtdX51NjOQoPyAwJL7k29a-dsb8ntm2MGbudVvCwOIj5K5nRmKyfCXYDOQjlRiBiVAcBoCkml__5YBKkjuzB0Xjz4T8IHshiNUyXTnb4T4q1qg25L6TRUaw7LwvcdP9ZSzipheB1gXwyQbzQlE4fE9cIEt0byBfLPLHXFk5fm14Od7LLWuwj9alTtNnfdGVOnm-oR2GT5NWW_pm0RdGg0yJKDV')">
+</div>
+<!-- SVG Overlay: Real-time Trajectory and PostGIS Polygonal Geofence -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" fill="none" viewbox="0 0 400 220">
+<!-- Translucent Geofence Campus Zone Polygon -->
+<polygon fill="rgba(16, 185, 129, 0.08)" points="40,20 360,35 340,195 65,180" stroke="rgba(16, 185, 129, 0.4)" stroke-dasharray="4 2" stroke-width="1.5"></polygon>
+<!-- Real-time Active Bike Trajectory Vector (Emerald Neon) -->
+<path d="M 75 160 Q 140 130 180 110 T 260 75" fill="none" stroke="#10B981" stroke-linecap="round" stroke-width="3.5"></path>
+<!-- Route Pulse Trail -->
+<circle cx="75" cy="160" fill="#1C1B1B" r="4.5" stroke="#FFFFFF" stroke-width="2"></circle>
+<!-- User Current Location Pin (Pulsing GPS Node) -->
+<circle cx="260" cy="75" fill="#10B981" fill-opacity="0.25" r="7"></circle>
+<circle cx="260" cy="75" fill="#10B981" r="4" stroke="#FFFFFF" stroke-width="1.5"></circle>
+</svg>
+<!-- Floating Urban Hazard Report Alert (Within 30m detection) -->
+<div class="absolute bottom-2 inset-x-2 bg-surface-container-lowest/95 backdrop-blur-md rounded-xl p-2.5 border border-outline-variant/60 shadow-lg animate-fadeIn">
+<div class="flex items-start space-x-2">
+<span class="material-symbols-outlined text-error text-lg flex-shrink-0 mt-0.5" data-icon="report_problem">report_problem</span>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-error font-semibold uppercase tracking-wide">HazardReport · a 28m</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">+5 pts</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface leading-snug">Entulho na ciclovia principal (Bloco E)</p>
+<div class="mt-2 flex items-center space-x-2">
+<button class="flex-1 bg-primary text-on-primary py-1 px-2 rounded-lg text-label-sm font-label-sm font-medium hover:bg-neutral-800 transition-colors active:scale-95 text-center">
+                    Confirmar (+1 endosso)
+                  </button>
+<button class="px-2.5 py-1 bg-surface-container text-on-surface-variant hover:text-on-surface rounded-lg text-label-sm font-label-sm transition-colors active:scale-95">
+                    Dispensar
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Telemetry Bottom Bar: Speed, Distance, Accumulated Points -->
+<div class="bg-surface-container-low px-3.5 py-2 flex items-center justify-between border-t border-outline-variant/30 text-body-sm font-body-sm">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="route">route</span>
+<span class="font-semibold text-on-surface">3,4 km</span>
+</div>
+<div class="flex items-center space-x-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-base" data-icon="speed">speed</span>
+<span class="font-code-sm text-code-sm">Vel. 15,2 km/h</span>
+</div>
+<div class="flex items-center space-x-1 font-semibold text-secondary">
+<span class="material-symbols-outlined text-base" data-icon="add_circle">add_circle</span>
+<span>+27 EcoPoints</span>
+</div>
+</div>
+</section>
+<!-- Active Redeemed Reward Card (Cantina Bloco C) -->
+<section class="bg-surface-container-lowest rounded-2xl p-3.5 border border-outline-variant/40 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-on-secondary-container text-lg" data-icon="local_cafe">local_cafe</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Recompensa Ativa</span>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary-container text-on-secondary-container font-medium">
+            Voucher Ativo · Expira em 6 dias
+          </span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Café Expresso Campus</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Cantina Bloco C · Resgate via 150 pts</p>
+</div>
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-lg text-label-sm font-label-sm font-medium hover:bg-neutral-800 transition-transform active:scale-95 flex items-center space-x-1 shadow-xs">
+<span class="material-symbols-outlined text-sm" data-icon="confirmation_number">confirmation_number</span>
+<span>Apresentar</span>
+</button>
+</div>
+<!-- Barcode / Token Representation -->
+<div class="bg-surface-container-low p-2 rounded-xl flex items-center justify-between border border-outline-variant/20">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="barcode">barcode</span>
+<span class="text-code-sm font-code-sm tracking-widest text-on-surface font-semibold">ECO-FAC-9938-X</span>
+</div>
+<span class="text-label-sm font-label-sm text-secondary font-medium">Apresentar no caixa</span>
+</div>
+</section>
+<!-- AI Sustainability Nudge Card (InsightEngine) -->
+<section class="bg-surface-container-low/90 rounded-2xl p-3 border border-outline-variant/40 flex items-start space-x-2.5">
+<div class="w-7 h-7 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary flex-shrink-0 shadow-xs border border-outline-variant/20">
+<span class="material-symbols-outlined text-base" data-icon="insights">insights</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center space-x-1.5">
+<span class="text-label-sm font-label-sm font-semibold text-primary">Insight IA · InsightEngine Campus</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+            Faltam apenas <span class="font-semibold text-on-surface">60 pts</span> para resgatar <strong class="text-on-surface">"Aluguel Grátis Patinete Elétrico"</strong>. Se vier de bike amanhã, você atinge a meta antes do almoço!
+          </p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Refined & Docked) -->
+<!-- JSON Schema Execution: 'Campus', 'Modos', 'Carona', 'Recompensas' with strict matching classes -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-2 max-w-md mx-auto inset-x-0 bg-surface-container-lowest/95 backdrop-blur-lg border-t border-outline-variant/30">
+<!-- Tab 1: Campus (Active Tab) -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-3.5 py-1.5 transition-all">
+<span class="material-symbols-outlined text-xl leading-none" data-icon="map">map</span>
+<span class="text-label-sm font-label-sm font-medium mt-0.5">Campus</span>
+</button>
+<!-- Tab 2: Modos -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl leading-none" data-icon="directions_bike">directions_bike</span>
+<span class="text-label-sm font-label-sm mt-0.5">Modos</span>
+</button>
+<!-- Tab 3: Carona -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl leading-none" data-icon="qr_code_scanner">qr_code_scanner</span>
+<span class="text-label-sm font-label-sm mt-0.5">Carona</span>
+</button>
+<!-- Tab 4: Recompensas with Badge -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary transition-colors relative">
+<span class="relative">
+<span class="material-symbols-outlined text-xl leading-none" data-icon="redeem">redeem</span>
+<span class="absolute -top-1 -right-1.5 w-2 h-2 bg-secondary rounded-full"></span>
+</span>
+<span class="text-label-sm font-label-sm mt-0.5">Recompensas</span>
+</button>
+</nav>
+</div>
+</body></html>

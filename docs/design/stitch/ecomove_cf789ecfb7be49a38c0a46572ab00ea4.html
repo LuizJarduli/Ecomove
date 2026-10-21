@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoMove · Central de Zeladoria Urbana &amp; Recompensas</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Typography Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed-variant": "#005236",
+            "on-secondary-fixed": "#002113",
+            "on-primary-container": "#858383",
+            "inverse-surface": "#2f3130",
+            "on-primary": "#ffffff",
+            "tertiary": "#000000",
+            "surface-tint": "#5f5e5e",
+            "primary": "#000000",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#07006c",
+            "on-secondary-container": "#00714d",
+            "surface-container-high": "#e8e8e6",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed": "#1c1b1b",
+            "surface-container-highest": "#e2e3e1",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#444748",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "surface-container": "#eeeeec",
+            "on-primary-fixed-variant": "#474646",
+            "surface-bright": "#f9f9f7",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#7073ff",
+            "outline-variant": "#c4c7c7",
+            "inverse-on-surface": "#f1f1ef",
+            "primary-fixed-dim": "#c8c6c5",
+            "inverse-primary": "#c8c6c5",
+            "background": "#f9f9f7",
+            "outline": "#747878",
+            "secondary-fixed-dim": "#4edea3",
+            "secondary": "#006c49",
+            "tertiary-container": "#07006c",
+            "on-error": "#ffffff",
+            "surface-container-low": "#f4f4f2",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#e5e2e1",
+            "surface-dim": "#dadad8",
+            "surface": "#f9f9f7",
+            "secondary-container": "#6cf8bb",
+            "tertiary-fixed": "#e1e0ff",
+            "primary-container": "#1c1b1b",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "on-surface": "#1a1c1b",
+            "secondary-fixed": "#6ffbbe",
+            "surface-variant": "#e2e3e1",
+            "error": "#ba1a1a",
+            "on-background": "#1a1c1b"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-compact": "0.5rem",
+            "space-md": "0.75rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "margin-desktop": "2rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "margin": "1.5rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Geist"],
+            "body-md": ["Geist"],
+            "headline-xl-mobile": ["Geist"],
+            "headline-xl": ["Geist"],
+            "headline-lg": ["Geist"],
+            "label-md": ["Geist"],
+            "code-sm": ["JetBrains Mono"],
+            "body-sm": ["Geist"],
+            "label-sm": ["Geist"],
+            "headline-md": ["Geist"],
+            "body-lg": ["Geist"]
+          },
+          "fontSize": {
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "code-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "500" }],
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f4f4f2;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #c4c7c7;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- TopNavBar (Shared Component Implemented) -->
+<header class="flex justify-between items-center w-full px-6 h-14 sticky top-0 z-50 border-b border-outline-variant/30 bg-surface-bright/80 backdrop-blur-md">
+<div class="flex items-center space-x-6">
+<div class="flex items-center space-x-2.5">
+<div class="w-7 h-7 bg-primary text-on-primary flex items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">hub</span>
+</div>
+<span class="text-headline-sm font-headline-sm tracking-tight text-on-surface font-semibold">
+          EcoMove · Portal do Gestor
+        </span>
+<span class="px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-surface-container border border-outline-variant/40 text-on-surface-variant">
+          v2.4.8-geo
+        </span>
+</div>
+<!-- Navigation Links from Shared Component JSON -->
+<nav class="hidden md:flex items-center space-x-6 pl-4 border-l border-outline-variant/30">
+<a class="text-on-surface-variant hover:text-on-surface py-1 transition-colors text-label-md font-label-md" href="#">
+          Visão Geral BI
+        </a>
+<a class="text-on-surface-variant hover:text-on-surface py-1 transition-colors text-label-md font-label-md flex items-center space-x-1.5" href="#">
+<span>Mapa PostGIS</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</a>
+<a class="text-secondary border-b-2 border-secondary font-medium py-1 text-label-md font-label-md flex items-center space-x-2" href="#">
+<span>Validação de Ocorrências</span>
+<span class="px-1.5 py-0.2 rounded-full text-code-sm font-code-sm bg-secondary-container text-on-secondary-container font-semibold">
+            3 pendentes
+          </span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface py-1 transition-colors text-label-md font-label-md" href="#">
+          Recompensas
+        </a>
+</nav>
+</div>
+<!-- Trailing Actions & User Profile -->
+<div class="flex items-center space-x-3">
+<button class="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">tune</span>
+<span>Exportar Telemetria</span>
+</button>
+<div class="flex items-center space-x-1 px-1 border-x border-outline-variant/30">
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" title="Hub de Notificações">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" title="Configurações Geoespaciais">
+<span class="material-symbols-outlined">hub</span>
+</button>
+</div>
+<div class="flex items-center space-x-2.5 pl-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant/60 flex items-center justify-center text-on-surface text-label-sm font-label-sm overflow-hidden" title="Gestor de Operações Facens">
+<span class="font-semibold text-primary">RF</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="text-label-md font-label-md text-on-surface font-semibold leading-tight">Ricardo Fontoura</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant leading-tight">Coord. Infraestrutura · @facens.br</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Sub-header Operational Bar -->
+<div class="bg-surface-container-lowest border-b border-outline-variant/30 px-6 py-2.5 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center space-x-3 text-body-sm font-body-sm">
+<div class="flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-surface-container text-on-surface">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-medium text-code-sm font-code-sm">Cluster PostGIS EPSG:4326 Online</span>
+</div>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant">Pipeline dedup: <span class="font-code-sm text-on-surface font-medium">ST_DWithin(geom, 30m)</span></span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant">Campus Sorocaba (Smart Campus Living Lab)</span>
+</div>
+<div class="flex items-center space-x-4 text-code-sm font-code-sm text-on-surface-variant">
+<span>Latência de ingestão: <strong class="text-on-surface font-semibold">18ms</strong></span>
+<span>Ocorrências ativas hoje: <strong class="text-on-surface font-semibold">24</strong></span>
+<span>Fator de deduplicação: <strong class="text-secondary font-semibold">78.4%</strong></span>
+</div>
+</div>
+<!-- Main Canvas: 12-Column Grid -->
+<main class="flex-1 w-full max-w-[1720px] mx-auto px-6 py-6">
+<div class="grid grid-cols-12 gap-6">
+<!-- ========================================== -->
+<!-- LEFT COLUMN: Hazard Validation (7 Columns) -->
+<!-- ========================================== -->
+<section class="col-span-12 xl:col-span-7 flex flex-col space-y-5">
+<!-- Section Header -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-outline-variant/30 pb-3">
+<div>
+<div class="flex items-center space-x-2">
+<h1 class="text-headline-md font-headline-md text-on-surface tracking-tight font-semibold">
+                Fila de Validação de Ocorrências
+              </h1>
+<span class="px-2 py-0.5 rounded text-code-sm font-code-sm bg-primary text-on-primary font-medium">
+                HazardReports
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1 max-w-2xl">
+              Deduplicação geoespacial automática PostGIS <code class="font-code-sm bg-surface-container px-1 py-0.5 rounded text-on-surface font-medium">ST_DWithin(30m)</code> e ranqueamento por endossos da comunidade acadêmica.
+            </p>
+</div>
+<div class="flex items-center space-x-2 text-code-sm font-code-sm text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined" style="font-size: 16px;">sync</span>
+<span>Auto-atualização: 15s</span>
+</div>
+</div>
+<!-- Filter Control Bar -->
+<div class="p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/40 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+<div class="flex items-center space-x-1.5 flex-wrap">
+<button class="px-3 py-1 rounded-lg text-label-md font-label-md bg-primary text-on-primary font-medium">
+              Todos (3)
+            </button>
+<button class="px-3 py-1 rounded-lg text-label-md font-label-md bg-surface-container hover:bg-surface-container-high text-on-surface font-medium transition-colors">
+              Alta Relevância
+            </button>
+<button class="px-3 py-1 rounded-lg text-label-md font-label-md bg-surface-container hover:bg-surface-container-high text-on-surface font-medium transition-colors flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Clusterizados 30m</span>
+</button>
+<button class="px-3 py-1 rounded-lg text-label-md font-label-md bg-surface-container hover:bg-surface-container-high text-on-surface font-medium transition-colors">
+              Recentes
+            </button>
+</div>
+<!-- Search & Toggle -->
+<div class="flex items-center space-x-3 w-full sm:w-auto">
+<div class="relative flex-1 sm:w-56">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 16px;">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 text-body-sm font-body-sm bg-background border border-outline-variant/60 rounded-lg focus:outline-none focus:border-primary text-on-surface placeholder:text-outline" placeholder="Buscar por rua ou bloco..." type="text"/>
+</div>
+<!-- Group Duplicates Toggle -->
+<label class="flex items-center space-x-2 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-secondary focus:ring-0 border-outline-variant cursor-pointer" type="checkbox"/>
+<span class="text-label-sm font-label-sm text-on-surface font-medium whitespace-nowrap">Agrupar Duplicadas (&lt;30m)</span>
+</label>
+</div>
+</div>
+<!-- Incident Cards Stack -->
+<div class="space-y-4">
+<!-- Card 1 (Urgente - Destaque Bike Lane) -->
+<article class="bg-surface-container-lowest border-2 border-primary/90 rounded-2xl p-space-lg relative overflow-hidden shadow-sm">
+<div class="absolute top-0 right-0 bg-primary text-on-primary px-3 py-0.5 rounded-bl-lg text-code-sm font-code-sm font-medium flex items-center space-x-1">
+<span class="material-symbols-outlined" style="font-size: 13px;">priority_high</span>
+<span>Prioridade Alta · 18 endossos</span>
+</div>
+<!-- Header Row -->
+<div class="flex flex-wrap items-center gap-2 mb-3 pr-32">
+<span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-error-container text-on-error-container font-medium">
+<span class="material-symbols-outlined" style="font-size: 15px;">directions_bike</span>
+<span>BIKE_LANE_OBSTRUCTION · Ciclovia Obstruída</span>
+</span>
+<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-secondary-container text-on-secondary-container font-medium">
+<span class="material-symbols-outlined" style="font-size: 14px;">near_me</span>
+<span>ST_DWithin(30m) · Cluster #CL-104 (18 confirmações)</span>
+</span>
+</div>
+<!-- Content Area: Image + Details -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<!-- Thumbnail -->
+<div class="md:col-span-4 relative rounded-xl overflow-hidden border border-outline-variant/40 aspect-[4/3] bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Fotografia de alta definição em ângulo frontal de uma ciclovia urbana asfaltada no campus universitário com cones laranjas e montes de entulho de construção civil bloqueando completamente a passagem de bicicletas sob a luz clara da manhã, estilo neutro, arquitetura limpa e tons realistas de concreto e asfalto com placas de sinalização viária visíveis ao fundo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYuOWeoc-Yr-k1zgQWaA-d2tNLlz7x7MwTaZKlh-iPYw36ca7JO--wEjh0jqY2I-zKjLRGWMlSPfD1RpQFHf17SlFE6vaGQathoWlrfU6lKIk8-JQYaiid1P0HVjVCW1TBmzn0ApliTq1hqt9joOKl0rDNDaQcr7Pm8nLFMx8n_x0Vko9CEk9ZUaSrLmDekOiXPRGrEIiwZJQ-1DFAFu443fHUcSChhJUmd471t9yHOw0ha95SFYwtR2AV673aeRMCRrGQI2PsudMS"/>
+<span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-primary-container/85 text-on-primary text-code-sm font-code-sm backdrop-blur-sm">
+                  WebP · 142KB
+                </span>
+<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-surface-bright/90 text-on-surface text-code-sm font-code-sm font-semibold border border-outline-variant/30">
+                  GeoTag #1
+                </span>
+</div>
+<!-- Data / Info -->
+<div class="md:col-span-8 flex flex-col justify-between space-y-2">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">
+                    Entulho de obra bloqueando a ciclovia norte em frente ao Bloco E
+                  </h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                    Obstrução crítica com resíduos de alvenaria e tábuas pontiagudas, forçando ciclistas a invadir a pista veicular de ônibus no anel viário do campus.
+                  </p>
+</div>
+<!-- Technical Metadata Grid -->
+<div class="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/30 space-y-1 font-code-sm text-code-sm">
+<div class="flex flex-wrap items-center justify-between text-on-surface-variant">
+<span>SRID: <strong class="text-on-surface font-medium">4326</strong> · Lat: <strong class="text-on-surface font-medium">-23.4719</strong>, Long: <strong class="text-on-surface font-medium">-47.4268</strong></span>
+<span class="text-outline">Há 35 min</span>
+</div>
+<div class="text-on-surface-variant flex items-center space-x-1.5">
+<span class="material-symbols-outlined" style="font-size: 14px;">verified_user</span>
+<span>Relatado por: <strong class="text-on-surface font-medium">Lucas V.</strong> (Aluno Eng. Mecatrônica · RA: 210834)</span>
+</div>
+</div>
+<!-- Endorsements note -->
+<div class="flex items-center space-x-2 text-body-sm font-body-sm text-on-secondary-container bg-secondary-container/30 px-3 py-1.5 rounded-lg border border-secondary/20">
+<span class="material-symbols-outlined text-secondary" style="font-size: 16px;">group_add</span>
+<span><strong>+18 HazardEndorsement</strong> com 3 fotos adicionais combinadas no raio de 30m</span>
+</div>
+</div>
+</div>
+<!-- Governance Action Buttons -->
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center space-x-2">
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary text-label-md font-label-md font-semibold hover:bg-on-surface-variant transition-colors flex items-center space-x-1.5 active:scale-95 shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
+<span>Aprovar (+25 EcoPoints)</span>
+</button>
+<button class="px-3.5 py-2 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md font-medium hover:bg-surface-container transition-colors active:scale-95">
+                  Rejeitar
+                </button>
+</div>
+<button class="px-3.5 py-2 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md font-medium hover:bg-surface-container transition-colors flex items-center space-x-1.5">
+<span class="material-symbols-outlined" style="font-size: 16px;">construction</span>
+<span>Marcar Resolvida / Em Obras</span>
+</button>
+</div>
+</article>
+<!-- Card 2: POOR_LIGHTING -->
+<article class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-space-lg shadow-sm hover:border-outline-variant transition-all">
+<!-- Header Row -->
+<div class="flex flex-wrap items-center gap-2 mb-3">
+<span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-surface-container-high text-on-surface font-medium">
+<span class="material-symbols-outlined" style="font-size: 15px;">lightbulb</span>
+<span>POOR_LIGHTING · Iluminação Precária</span>
+</span>
+<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-surface-container text-on-surface-variant font-medium">
+<span class="material-symbols-outlined" style="font-size: 14px;">near_me</span>
+<span>ST_DWithin(30m) · 7 confirmações</span>
+</span>
+</div>
+<!-- Content Area -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<div class="md:col-span-4 relative rounded-xl overflow-hidden border border-outline-variant/40 aspect-[4/3] bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Fotografia em luz crepuscular de um estacionamento universitário com postes de iluminação pública apagados e intermitentes perto de fileiras de veículos e árvores, com iluminação fraca criando sombras alongadas no pavimento de asfalto, estética sóbria e minimalista em estilo de documentação técnica urbana." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuOjsSptHU50nmmpx_1OOuyYuexPDNOKcfLElK5tRyJRYKccpx6q359oSlq5F5_0SeoCsEjPzOgXb3KmAcPaG56laAOJHN25kgURCroP2Io5V7NEjAkAg8qUZ3vhouR83Hhqo7DS8Y9Nk-6UCqRaQeRT4q6D7XQbgxjT2T96JtW0SeUUwAOcG5OnheK5DI7ZZPz2CaR3PqJ323HptKpMB7LcwY9fg0bi1bPrDai1bCSeDedyr9QgDVl3wWcokHXCoTUv9sGg7fOZjQ"/>
+<span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-primary-container/85 text-on-primary text-code-sm font-code-sm backdrop-blur-sm">
+                  WebP · 98KB
+                </span>
+</div>
+<div class="md:col-span-8 flex flex-col justify-between space-y-2">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">
+                    Iluminação pública intermitente no estacionamento Bloco C
+                  </h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                    Dois postes de LED apresentando oscilação contínua e um ponto cego de 40 metros na rota de pedestres em direção aos laboratórios de TI.
+                  </p>
+</div>
+<!-- Technical Metadata -->
+<div class="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/30 space-y-1 font-code-sm text-code-sm">
+<div class="flex flex-wrap items-center justify-between text-on-surface-variant">
+<span>Lat: <strong class="text-on-surface font-medium">-23.4735</strong>, Long: <strong class="text-on-surface font-medium">-47.4251</strong></span>
+<span class="text-outline">Há 2h</span>
+</div>
+<div class="text-on-surface-variant flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">check_circle</span>
+<span>Relator verificado (Docente Depto. Elétrica)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center space-x-2">
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary text-label-md font-label-md font-semibold hover:bg-on-surface-variant transition-colors flex items-center space-x-1.5 active:scale-95 shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
+<span>Aprovar (+25 EcoPoints)</span>
+</button>
+<button class="px-3.5 py-2 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md font-medium hover:bg-surface-container transition-colors active:scale-95">
+                  Rejeitar
+                </button>
+</div>
+<button class="px-3.5 py-2 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md font-medium hover:bg-surface-container transition-colors flex items-center space-x-1.5">
+<span class="material-symbols-outlined" style="font-size: 16px;">construction</span>
+<span>Marcar Resolvida</span>
+</button>
+</div>
+</article>
+<!-- Card 3: SIDEWALK_DAMAGE -->
+<article class="bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-space-lg shadow-sm hover:border-outline-variant transition-all">
+<!-- Header Row -->
+<div class="flex flex-wrap items-center gap-2 mb-3">
+<span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-surface-container-high text-on-surface font-medium">
+<span class="material-symbols-outlined" style="font-size: 15px;">accessible</span>
+<span>SIDEWALK_DAMAGE · Calçada Danificada</span>
+</span>
+<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-surface-container text-on-surface-variant font-medium">
+<span class="material-symbols-outlined" style="font-size: 14px;">near_me</span>
+<span>ST_DWithin(30m) · 12 confirmações</span>
+</span>
+</div>
+<!-- Content Area -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<div class="md:col-span-4 relative rounded-xl border border-outline-variant/40 aspect-[4/3] bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Fotografia em close-up de calçada de ladrilhos hidráulicos intertravados com placas quebradas e desnível de cinco centímetros na faixa podotátil acessível de um campus universitário moderno, iluminação difusa diurna e textura nítida de cimento e cascalho solto em estilo de auditoria predial." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMMj6olgRmU7oO6tUREgmM_fhskIzm1TJtdS5sbZ5fWL_2LPTwb0D4OwTtLDW_epmrh857o7pA4CDHRA-alhu7ooFNmneNXET4Z04fMMLvq9AoXyhtf1Nx1I29-dNoVcMJMkTi9CNiGjfafGp52hUPjOPgnNqHyPndQKzH731h2puxaEO0E2e6fLriKcU7PkHwtx6sNaiKKXxL-YqA-h34zgd7HKqIGpICSpZmnJxt_cBFublxnchQSQSjH9fT1HUYIvrTuC4HiRQf"/>
+<span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-primary-container/85 text-on-primary text-code-sm font-code-sm backdrop-blur-sm">
+                  WebP · 165KB
+                </span>
+</div>
+<div class="md:col-span-8 flex flex-col justify-between space-y-2">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">
+                    Lajota solta e desnível na rota acessível entre Biblioteca e Centro de Convivência
+                  </h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                    Rompimento do piso tátil de alerta e placas de concreto soltas que geram risco iminente de tropeço a pessoas com deficiência visual e mobilidade reduzida.
+                  </p>
+</div>
+<!-- Technical Metadata -->
+<div class="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/30 space-y-1 font-code-sm text-code-sm">
+<div class="flex flex-wrap items-center justify-between text-on-surface-variant">
+<span>Lat: <strong class="text-on-surface font-medium">-23.4722</strong>, Long: <strong class="text-on-surface font-medium">-47.4280</strong></span>
+<span class="text-outline">Há 4h</span>
+</div>
+<div class="text-on-surface-variant flex items-center space-x-1.5">
+<span class="material-symbols-outlined" style="font-size: 14px;">person</span>
+<span>Relatado por: Mariana D. (Comitê de Acessibilidade FACENS)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center space-x-2">
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary text-label-md font-label-md font-semibold hover:bg-on-surface-variant transition-colors flex items-center space-x-1.5 active:scale-95 shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
+<span>Aprovar (+25 EcoPoints)</span>
+</button>
+<button class="px-3.5 py-2 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md font-medium hover:bg-surface-container transition-colors active:scale-95">
+                  Rejeitar
+                </button>
+</div>
+<button class="px-3.5 py-2 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface text-label-md font-label-md font-medium hover:bg-surface-container transition-colors flex items-center space-x-1.5">
+<span class="material-symbols-outlined" style="font-size: 16px;">construction</span>
+<span>Marcar Resolvida</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- =========================================== -->
+<!-- RIGHT COLUMN: Rewards & Ledger (5 Columns) -->
+<!-- =========================================== -->
+<aside class="col-span-12 xl:col-span-5 flex flex-col space-y-6">
+<!-- Top Block: Rewards Administration -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-space-lg shadow-sm">
+<div class="flex items-start justify-between pb-3 border-b border-outline-variant/30">
+<div>
+<div class="flex items-center space-x-2">
+<h2 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">
+                  Administração de Parceiros e Benefícios
+                </h2>
+<span class="px-2 py-0.5 rounded text-code-sm font-code-sm bg-surface-container font-medium text-on-surface-variant">
+                  Rewards
+                </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Resumo de estoque e parcerias ativas no campus universitário.
+              </p>
+</div>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/60 bg-surface-container-low text-on-surface text-label-sm font-label-sm font-semibold hover:bg-surface-container transition-colors shrink-0">
+              + Novo Parceiro
+            </button>
+</div>
+<!-- Partner Items List -->
+<div class="mt-4 space-y-3">
+<!-- Partner 1 -->
+<div class="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-size: 18px;">local_cafe</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md font-semibold text-on-surface">Cafeteria Campus Central</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Voucher R$ 15,00 · <strong class="text-primary font-code-sm">150 pts</strong></p>
+</div>
+</div>
+<div class="text-right">
+<span class="px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-secondary-container text-on-secondary-container font-medium">
+                    Estoque: 42/100
+                  </span>
+<div class="text-code-sm font-code-sm text-on-surface-variant mt-1">312 resgates no mês</div>
+</div>
+</div>
+<div class="mt-2.5 w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 42%;"></div>
+</div>
+</div>
+<!-- Partner 2 -->
+<div class="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-size: 18px;">pedal_bike</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md font-semibold text-on-surface">Bike Shop Sorocaba (Revisão Express)</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Ajuste de freios e câmbio · <strong class="text-primary font-code-sm">350 pts</strong></p>
+</div>
+</div>
+<div class="text-right">
+<span class="px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-error-container text-on-error-container font-medium">
+                    Estoque: 8/25
+                  </span>
+<div class="text-code-sm font-code-sm text-on-surface-variant mt-1">89 resgates</div>
+</div>
+</div>
+<div class="mt-2.5 w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 32%;"></div>
+</div>
+</div>
+<!-- Partner 3 -->
+<div class="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-size: 18px;">menu_book</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md font-semibold text-on-surface">Livraria Universitária</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">20% Desconto em Material Técnico · <strong class="text-primary font-code-sm">120 pts</strong></p>
+</div>
+</div>
+<div class="text-right">
+<span class="px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-secondary-container text-on-secondary-container font-medium">
+                    Estoque: 65/150
+                  </span>
+<div class="text-code-sm font-code-sm text-on-surface-variant mt-1">140 resgates</div>
+</div>
+</div>
+<div class="mt-2.5 w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 43.3%;"></div>
+</div>
+</div>
+</div>
+<!-- Business Rule Panel: Expiration & Refund -->
+<div class="mt-4 p-3.5 rounded-xl border border-outline-variant/50 bg-surface-bright space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary" style="font-size: 16px;">autorenew</span>
+<span class="text-label-md font-label-md font-semibold text-on-surface">Política de Expiração e Estorno: 7 dias corridos</span>
+</div>
+<span class="px-2 py-0.2 rounded-full text-code-sm font-code-sm bg-secondary-container text-on-secondary-container font-medium">
+                Ativo
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              Trigger <code class="font-code-sm text-on-surface bg-surface-container px-1 py-0.5 rounded font-medium">REDEMPTION_EXPIRED_REFUND</code>: Estorno automático de pontos para a carteira do usuário se voucher não resgatado no balcão em 7 dias.
+            </p>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-code-sm font-code-sm">
+<span class="text-on-surface-variant">14 estornos executados esta semana</span>
+<span class="text-secondary font-medium">Cron: 00:00 UTC-3</span>
+</div>
+</div>
+</div>
+<!-- Bottom Block: PointTransaction Immutable Ledger -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-space-lg shadow-sm flex flex-col flex-1">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+<div>
+<div class="flex items-center space-x-2">
+<h2 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">
+                  Livro-Razão Imutável
+                </h2>
+<span class="px-2 py-0.5 rounded text-code-sm font-code-sm bg-primary-container text-on-primary font-medium">
+                  Ledger
+                </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Auditoria de créditos distribuídos e débitos de resgate em tempo real.
+              </p>
+</div>
+<span class="material-symbols-outlined text-outline" style="font-size: 18px;">lock</span>
+</div>
+<!-- Transaction Rows Table -->
+<div class="mt-3 divide-y divide-outline-variant/30 font-body-sm">
+<!-- Row 1: Credit -->
+<div class="py-2.5 flex items-center justify-between text-body-sm">
+<div class="flex items-center space-x-3">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-code-sm font-code-sm font-bold">
+                  +
+                </span>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-code-sm text-code-sm font-semibold text-secondary">+25 pts</span>
+<span class="text-outline-variant">·</span>
+<span class="font-medium text-on-surface text-label-sm font-label-sm">HAZARD_APPROVED #084</span>
+</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant">
+                    Ana Silva (Validação de Buraco Ciclovia)
+                  </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-code-sm font-code-sm text-on-surface-variant">Há 4 min</span>
+<div class="text-code-sm font-code-sm font-medium text-outline">#8f9a2e</div>
+</div>
+</div>
+<!-- Row 2: Debit -->
+<div class="py-2.5 flex items-center justify-between text-body-sm">
+<div class="flex items-center space-x-3">
+<span class="w-6 h-6 rounded-full bg-error-container text-on-error-container flex items-center justify-center text-code-sm font-code-sm font-bold">
+                  -
+                </span>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-code-sm text-code-sm font-semibold text-error">-150 pts</span>
+<span class="text-outline-variant">·</span>
+<span class="font-medium text-on-surface text-label-sm font-label-sm">REWARD_REDEEM</span>
+</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant">
+                    Cafeteria Central (Carlos E.)
+                  </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-code-sm font-code-sm text-on-surface-variant">Há 12 min</span>
+<div class="text-code-sm font-code-sm font-medium text-outline">#71bc30</div>
+</div>
+</div>
+<!-- Row 3: Refund -->
+<div class="py-2.5 flex items-center justify-between text-body-sm">
+<div class="flex items-center space-x-3">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center text-code-sm font-code-sm font-bold">
+                  ↺
+                </span>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-code-sm text-code-sm font-semibold text-on-surface">+150 pts</span>
+<span class="text-outline-variant">·</span>
+<span class="font-medium text-on-surface text-label-sm font-label-sm">REDEMPTION_EXPIRED_REFUND</span>
+</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant">
+                    Voucher #V-9042 não utilizado
+                  </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-code-sm font-code-sm text-on-surface-variant">Há 1h</span>
+<div class="text-code-sm font-code-sm font-medium text-outline">#44a9fd</div>
+</div>
+</div>
+<!-- Row 4: Commute Bike Active -->
+<div class="py-2.5 flex items-center justify-between text-body-sm">
+<div class="flex items-center space-x-3">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-code-sm font-code-sm font-bold">
+                  +
+                </span>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-code-sm text-code-sm font-semibold text-secondary">+50 pts</span>
+<span class="text-outline-variant">·</span>
+<span class="font-medium text-on-surface text-label-sm font-label-sm">COMMUTE_ACTIVE_ST_WITHIN</span>
+</div>
+<div class="text-code-sm font-code-sm text-on-surface-variant">
+                    4.2 km bike validado via geofence
+                  </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-code-sm font-code-sm text-on-surface-variant">Há 1h15</span>
+<div class="text-code-sm font-code-sm font-medium text-outline">#10cd72</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action -->
+<div class="mt-auto pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<span class="text-code-sm font-code-sm text-on-surface-variant">SHA-256 Merkle Root Integrado</span>
+<button class="inline-flex items-center space-x-1 text-label-md font-label-md font-semibold text-primary hover:underline">
+<span>Exportar Balancete Contábil (CSV/Parquet)</span>
+<span class="material-symbols-outlined" style="font-size: 15px;">download</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer (Shared Component Implemented) -->
+<footer class="w-full py-4 px-6 flex flex-col md:flex-row justify-between items-center text-body-sm text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30 mt-auto">
+<div class="flex items-center space-x-3 mb-2 md:mb-0">
+<span class="text-label-md font-label-md text-on-surface font-semibold">
+        © 2025 EcoMove Campus Analytics · Laboratório de Cidades Inteligentes FACENS
+      </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-code-sm font-code-sm bg-surface-container text-on-surface-variant">
+        PostGIS 3.4 / pgRouting
+      </span>
+</div>
+<!-- Mandatory Footer Links from Shared Components JSON -->
+<div class="flex flex-wrap items-center space-x-6 text-label-sm font-label-sm">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+        Documentação API PostGIS
+      </a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors flex items-center space-x-1" href="#">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>Status do Cluster IoT</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+        Termos de Governança de Dados
+      </a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+        Suporte Técnico CTI
+      </a>
+</div>
+</footer>
+<script>
+    // Micro-interactions for buttons
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!this.classList.contains('active:scale-95')) {
+          this.classList.add('transition-transform', 'active:scale-95');
+        }
+      });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background text-on-surface antialiased" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoMove · Portal do Gestor (FACENS Smart Campus)</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed-variant": "#005236",
+            "surface-bright": "#f9f9f7",
+            "primary": "#000000",
+            "on-background": "#1a1c1b",
+            "on-primary-container": "#858383",
+            "on-secondary-fixed": "#002113",
+            "surface-dim": "#dadad8",
+            "on-surface-variant": "#444748",
+            "error": "#ba1a1a",
+            "on-primary-fixed": "#1c1b1b",
+            "on-primary": "#ffffff",
+            "on-secondary-container": "#00714d",
+            "inverse-on-surface": "#f1f1ef",
+            "surface-container-low": "#f4f4f2",
+            "inverse-surface": "#2f3130",
+            "secondary": "#006c49",
+            "secondary-container": "#6cf8bb",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#6ffbbe",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#c0c1ff",
+            "on-primary-fixed-variant": "#474646",
+            "primary-container": "#1c1b1b",
+            "tertiary": "#000000",
+            "background": "#f9f9f7",
+            "on-tertiary-container": "#7073ff",
+            "surface-container-highest": "#e2e3e1",
+            "on-tertiary-fixed-variant": "#2f2ebe",
+            "secondary-fixed-dim": "#4edea3",
+            "tertiary-container": "#07006c",
+            "surface-tint": "#5f5e5e",
+            "on-secondary": "#ffffff",
+            "outline": "#747878",
+            "outline-variant": "#c4c7c7",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#e5e2e1",
+            "surface-container": "#eeeeec",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#07006c",
+            "on-error": "#ffffff",
+            "surface-container-high": "#e8e8e6",
+            "tertiary-fixed": "#e1e0ff",
+            "surface-variant": "#e2e3e1",
+            "on-surface": "#1a1c1b",
+            "primary-fixed-dim": "#c8c6c5",
+            "surface": "#f9f9f7",
+            "inverse-primary": "#c8c6c5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-compact": "0.5rem",
+            "margin-desktop": "2rem",
+            "space-xs": "0.25rem",
+            "margin": "1.5rem",
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "space-xl": "2rem"
+          },
+          "fontFamily": {
+            "headline-xl-mobile": ["Geist"],
+            "code-sm": ["JetBrains Mono"],
+            "label-sm": ["Geist"],
+            "headline-sm": ["Geist"],
+            "headline-lg": ["Geist"],
+            "body-sm": ["Geist"],
+            "label-md": ["Geist"],
+            "body-md": ["Geist"],
+            "body-lg": ["Geist"],
+            "headline-md": ["Geist"],
+            "headline-xl": ["Geist"]
+          },
+          "fontSize": {
+            "headline-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "code-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "500" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.02);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col bg-background font-body-md text-on-surface selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- ========================================================= -->
+<!-- 1. TOP GLASSMORPHIC NAVIGATION BAR (Shared Component Anchor) -->
+<!-- ========================================================= -->
+<header class="flex justify-between items-center w-full px-6 h-14 sticky top-0 z-50 border-b border-outline-variant/30 bg-surface-bright/80 backdrop-blur-md">
+<!-- Brand / Product Identity -->
+<div class="flex items-center gap-3">
+<div class="relative flex items-center justify-center w-7 h-7 rounded-lg bg-primary-container text-surface-lowest">
+<span class="material-symbols-outlined text-secondary-fixed" data-icon="energy_savings_leaf">energy_savings_leaf</span>
+<span class="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-headline-sm font-headline-sm tracking-tight text-on-surface font-semibold">EcoMove · Portal do Gestor</span>
+<span class="hidden xl:inline-flex items-center px-1.5 py-0.5 rounded text-code-sm font-code-sm bg-surface-container text-on-surface-variant border border-outline-variant/40">v2.4.8-geo</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-secondary border-b-2 border-secondary font-medium py-1 text-label-md font-label-md flex items-center gap-1.5" href="#bi">
+<span class="material-symbols-outlined text-secondary" data-icon="dashboard" style="font-size: 16px;">dashboard</span>
+        Visão Geral BI
+      </a>
+<a class="text-on-surface-variant hover:text-on-surface py-1 transition-colors text-label-md font-label-md flex items-center gap-1.5" href="#postgis">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="map" style="font-size: 16px;">map</span>
+        Mapa PostGIS
+      </a>
+<a class="text-on-surface-variant hover:text-on-surface py-1 transition-colors text-label-md font-label-md flex items-center gap-1.5" href="#ocorrencias">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="rule" style="font-size: 16px;">rule</span>
+        Validação de Ocorrências
+        <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-code-sm font-code-sm bg-error-container text-on-error-container font-semibold">3 pendentes</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface py-1 transition-colors text-label-md font-label-md flex items-center gap-1.5" href="#recompensas">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="loyalty" style="font-size: 16px;">loyalty</span>
+        Recompensas
+      </a>
+</nav>
+<!-- Trailing Action Cluster & Institutional User -->
+<div class="flex items-center gap-3">
+<!-- Institutional Scope Filter Pill -->
+<button class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container border border-outline-variant/50 text-body-sm font-body-sm text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-secondary" data-icon="school" style="font-size: 16px;">school</span>
+<span class="font-medium">@facens.br</span>
+<span class="text-on-surface-variant text-code-sm font-code-sm">(Comunidade Acadêmica)</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="expand_more" style="font-size: 14px;">expand_more</span>
+</button>
+<!-- Trailing Primary Action -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-transform active:scale-95 duration-150 text-label-md font-label-md shadow-sm">
+<span class="material-symbols-outlined text-on-primary" data-icon="file_download" style="font-size: 16px;">file_download</span>
+        Exportar Telemetria
+      </button>
+<!-- Trailing Action Icons -->
+<div class="flex items-center border-l border-outline-variant/40 pl-2 gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded-lg hover:bg-surface-container hover:text-on-surface transition-colors" title="Hub de Dispositivos IoT">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+</button>
+<button class="relative p-1.5 rounded-lg hover:bg-surface-container hover:text-on-surface transition-colors" title="Notificações Operacionais">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full"></span>
+</button>
+<button class="p-1.5 rounded-lg hover:bg-surface-container hover:text-on-surface transition-colors" title="Ajustes de Parâmetros">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+<!-- User Profile Badge -->
+<div class="flex items-center gap-2 pl-1 border-l border-outline-variant/40">
+<div class="w-7 h-7 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-semibold text-label-sm font-label-sm ring-1 ring-secondary/20">
+          EF
+        </div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-label-sm font-label-sm text-on-surface font-semibold leading-tight">Eng. Mobilidade Facens</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant leading-none">gestor.smartcampus</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================= -->
+<!-- MAIN WORKSPACE CONTAINER -->
+<!-- ========================================================= -->
+<main class="flex-1 w-full max-w-[1720px] mx-auto px-4 md:px-6 py-5 flex flex-col gap-5">
+<!-- 2. SUB-HEADER & DATE FILTER CONTROLS -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-1">
+<div>
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-1">
+<span class="hover:text-primary cursor-pointer">Campus Sorocaba</span>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right" style="font-size: 14px;">chevron_right</span>
+<span class="font-medium text-secondary">Laboratório de Cidades Inteligentes & Mobilidade Ativa</span>
+</div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight font-semibold">
+          Monitoramento Espacial e Impacto Ambiental em Tempo Real
+        </h1>
+</div>
+<!-- Quick Date Filter Ribbon & Real-time Indicator -->
+<div class="flex flex-wrap items-center gap-2.5">
+<div class="inline-flex p-0.5 rounded-lg bg-surface-container border border-outline-variant/40 text-label-sm font-label-sm">
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Hoje</button>
+<button class="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface font-semibold shadow-xs">Últimos 7 dias</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Mês Atual</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Semestre 2025.1</button>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-code-sm font-code-sm text-on-surface">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed-dim opacity-80"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+<span class="font-medium text-secondary">PostGIS Sync: Ativo</span>
+<span class="text-on-surface-variant border-l border-outline-variant/50 pl-2">24ms latency</span>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- 3. TOP KPI ROW (4 Balanced Pro-Cards) -->
+<!-- ========================================================= -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1: Deslocamentos Validados -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-5 hover:border-outline/50 transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Deslocamentos Validados</span>
+<div class="w-8 h-8 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="directions_bike" style="font-size: 18px;">directions_bike</span>
+</div>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-on-surface font-semibold tracking-tight">1.420 Trips</span>
+<span class="inline-flex items-center text-code-sm font-code-sm text-secondary font-medium bg-secondary-container/30 px-1.5 py-0.5 rounded">
+              ↑ +18.4%
+            </span>
+</div>
+<p class="mt-1 text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>942 ciclistas</span>
+<span class="text-outline-variant">·</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span>478 pedestres</span>
+</p>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/30 flex justify-between text-code-sm font-code-sm text-on-surface-variant">
+<span>CampusZone ST_Within</span>
+<span class="font-mono text-on-surface font-medium">99.2% acurácia</span>
+</div>
+</div>
+<!-- Card 2: CO2 Evitado Estimado -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-5 hover:border-outline/50 transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">CO₂ Evitado Estimado</span>
+<div class="w-8 h-8 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="co2" style="font-size: 18px;">co2</span>
+</div>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-on-surface font-semibold tracking-tight">486,4 kg</span>
+<span class="inline-flex items-center text-code-sm font-code-sm text-secondary font-medium bg-secondary-container/30 px-1.5 py-0.5 rounded">
+              +12.3% meta verde
+            </span>
+</div>
+<p class="mt-1 text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary" data-icon="forest" style="font-size: 14px;">forest</span>
+<span>Equivalente a 34 árvores preservadas</span>
+</p>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/30 flex justify-between text-code-sm font-code-sm text-on-surface-variant">
+<span>Fator IPCC 2024</span>
+<span class="font-mono text-on-surface font-medium">0,132 kg/km ativo</span>
+</div>
+</div>
+<!-- Card 3: Saldo EcoPoints Emitidos -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-5 hover:border-outline/50 transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Saldo EcoPoints Emitidos</span>
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="token" style="font-size: 18px;">token</span>
+</div>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-on-surface font-semibold tracking-tight">38.950 pts</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">Pool: 50k pts</span>
+</div>
+<!-- Micro Progress Bar -->
+<div class="w-full bg-surface-container-high rounded-full h-1.5 mt-2 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 78%;"></div>
+</div>
+<p class="mt-1.5 text-body-sm font-body-sm text-on-surface-variant">
+            78% do pool mensal distribuído
+          </p>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/30 flex justify-between text-code-sm font-code-sm text-on-surface-variant">
+<span>Resgates Cantina / Lab</span>
+<span class="font-mono text-on-surface font-medium">842 resgates</span>
+</div>
+</div>
+<!-- Card 4: Ocorrências Resolvidas -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-5 hover:border-outline/50 transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Ocorrências Resolvidas</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container text-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="verified" style="font-size: 18px;">verified</span>
+</div>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-on-surface font-semibold tracking-tight">84% Resolvido</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant font-mono">(18 / 21 tratadas)</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<span class="px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-surface-container text-on-surface font-medium">Iluminação (9)</span>
+<span class="px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-surface-container text-on-surface font-medium">Ciclovia Segura (9)</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/30 flex justify-between text-code-sm font-code-sm text-on-surface-variant">
+<span>SLA Médio de Resposta</span>
+<span class="font-mono text-secondary font-medium">4,2 horas úteis</span>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- 4. MAIN BENTO GRID (12 Columns: 7 Col Map + 5 Col Dual Stack) -->
+<!-- ========================================================= -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+<!-- LEFT PANEL: MAPA GEOESPACIAL POSTGIS (7 Columns) -->
+<section class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/40 rounded-2xl overflow-hidden flex flex-col h-[740px] shadow-sm relative">
+<!-- Map Header & Filter Toggles -->
+<div class="p-4 border-b border-outline-variant/30 flex flex-wrap items-center justify-between gap-3 bg-surface-container-low/60 backdrop-blur-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="layers" style="font-size: 20px;">layers</span>
+<div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface font-semibold leading-tight">Mapa Geoespacial PostGIS</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Centro Universitário FACENS · Campus Sorocaba (Rod. Senador José Ermírio de Moraes)</p>
+</div>
+</div>
+<!-- Dynamic Layer Pills -->
+<div class="flex items-center gap-1.5 flex-wrap">
+<button class="px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-secondary-container/40 text-on-secondary-container border border-secondary-fixed font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              CampusZone (ST_Contains)
+            </button>
+<button class="px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-surface-container text-on-surface border border-outline-variant/40 hover:bg-surface-container-high transition-colors flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Trajetórias (GPS + WKT)
+            </button>
+<button class="px-2.5 py-1 rounded-full text-code-sm font-code-sm bg-surface-container text-on-surface border border-outline-variant/40 hover:bg-surface-container-high transition-colors flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+              HazardReport (3)
+            </button>
+</div>
+</div>
+<!-- Simulated Interactive Map Canvas (High Fidelity Vector Blueprint) -->
+<div class="relative flex-1 w-full bg-[#f2f2ee] overflow-hidden select-none">
+<!-- Subtle Grid Coordinates Background -->
+<svg class="absolute inset-0 w-full h-full opacity-35 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="40" id="campus-grid" patternunits="userSpaceOnUse" width="40">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d5d5d0" stroke-width="0.8"></path>
+</pattern>
+</defs>
+<rect fill="url(#campus-grid)" height="100%" width="100%"></rect>
+</svg>
+<!-- FACENS Campus Zones & Roads SVG Simulation -->
+<svg class="absolute inset-0 w-full h-full" fill="none" viewbox="0 0 760 580" xmlns="http://www.w3.org/2000/svg">
+<!-- Surrounding Terrain & Campus Perimeter Zone -->
+<polygon fill="#e9eae4" points="50,40 710,30 730,520 60,540" stroke="#c4c7c7" stroke-dasharray="4 4" stroke-width="1.2"></polygon>
+<!-- CampusZone Boundary Highlight (Emerald Polygon) -->
+<polygon fill="#10B981" fill-opacity="0.04" points="90,70 680,60 690,490 85,505" stroke="#006c49" stroke-dasharray="8 6" stroke-width="2.5"></polygon>
+<!-- Green Campus Parks / Protected Tree Clusters -->
+<path d="M 120,90 Q 210,80 230,160 T 110,210 Z" fill="#6cf8bb" fill-opacity="0.25"></path>
+<path d="M 480,340 Q 640,320 620,460 T 470,440 Z" fill="#6cf8bb" fill-opacity="0.2"></path>
+<!-- Arterial Access: Rodovia & Main Boulevard -->
+<path d="M 40,280 Q 380,270 740,290" stroke="#dadad8" stroke-linecap="round" stroke-width="24"></path>
+<path d="M 40,280 Q 380,270 740,290" stroke="#ffffff" stroke-linecap="round" stroke-width="18"></path>
+<path d="M 40,280 Q 380,270 740,290" stroke="#c4c7c7" stroke-dasharray="8 8" stroke-width="2"></path>
+<!-- Secondary Campus Ring Road -->
+<path d="M 160,110 L 610,100 L 640,460 L 150,470 Z" stroke="#ffffff" stroke-linejoin="round" stroke-width="14"></path>
+<path d="M 160,110 L 610,100 L 640,460 L 150,470 Z" stroke="#d5d5d0" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<!-- Active Bicycle Superhighway (Emerald Solid Neon Line) -->
+<path d="M 85,380 C 180,390 220,290 320,290 S 480,180 590,170" filter="drop-shadow(0 2px 4px rgba(0,108,73,0.3))" stroke="#006c49" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.5"></path>
+<!-- Walking Density Trail (Cyan / Indigo Micro-dots) -->
+<path d="M 240,460 L 260,330 L 390,320 L 410,190 L 510,180" stroke="#7073ff" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="3"></path>
+<!-- Campus Architectural Footprints (Buildings) -->
+<!-- Prédio Central (Reitoria / Auditório) -->
+<rect fill="#ffffff" height="70" rx="6" stroke="#c4c7c7" stroke-width="1.5" width="120" x="290" y="220"></rect>
+<text fill="#1a1c1b" font-family="Geist" font-size="11" font-weight="600" text-anchor="middle" x="350" y="258">Prédio Central</text>
+<text fill="#747878" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="350" y="272">HUB 01 · ADM</text>
+<!-- Biblioteca Central / Smart Lab -->
+<rect fill="#ffffff" height="60" rx="6" stroke="#c4c7c7" stroke-width="1.5" width="100" x="450" y="140"></rect>
+<text fill="#1a1c1b" font-family="Geist" font-size="11" font-weight="600" text-anchor="middle" x="500" y="172">Biblioteca</text>
+<text fill="#747878" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="500" y="185">LINC SmartCity</text>
+<!-- Complexo de Engenharia & Laboratórios (Blocos B/C/D) -->
+<rect fill="#ffffff" height="90" rx="6" stroke="#c4c7c7" stroke-width="1.5" width="90" x="170" y="140"></rect>
+<text fill="#1a1c1b" font-family="Geist" font-size="11" font-weight="600" text-anchor="middle" x="215" y="182">Bloco B & C</text>
+<text fill="#747878" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="215" y="196">Engenharias</text>
+<!-- Estacionamento Ciclovia & Hub Multimodal -->
+<rect fill="#f4f4f2" height="60" rx="6" stroke="#006c49" stroke-dasharray="3 3" stroke-width="1.5" width="80" x="160" y="340"></rect>
+<text fill="#006c49" font-family="Geist" font-size="10" font-weight="600" text-anchor="middle" x="200" y="370">Paraciclo Hub</text>
+<text fill="#444748" font-family="JetBrains Mono" font-size="8" text-anchor="middle" x="200" y="384">60 vagas ativas</text>
+<!-- Pista de Testes & Mobilidade Autônoma -->
+<rect fill="#ffffff" height="80" rx="8" stroke="#c4c7c7" stroke-width="1.5" width="130" x="420" y="350"></rect>
+<text fill="#1a1c1b" font-family="Geist" font-size="11" font-weight="600" text-anchor="middle" x="485" y="388">Pista de Testes</text>
+<text fill="#747878" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="485" y="402">IoT / V2X Testbed</text>
+<!-- Portaria 1 (Principal) & Portaria 2 -->
+<circle cx="78" cy="280" fill="#1a1c1b" r="7"></circle>
+<text fill="#1a1c1b" font-family="Geist" font-size="10" font-weight="600" text-anchor="middle" x="78" y="265">Portaria 1</text>
+<circle cx="628" cy="100" fill="#1a1c1b" r="7"></circle>
+<text fill="#1a1c1b" font-family="Geist" font-size="10" font-weight="600" text-anchor="middle" x="628" y="86">Portaria 2</text>
+</svg>
+<!-- Interactive Hazard / Event Pin 1 (Buraco na Ciclovia Norte) -->
+<div class="absolute top-[31%] left-[42%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-20">
+<div class="flex items-center justify-center w-7 h-7 rounded-full bg-error text-on-error shadow-md border-2 border-surface-container-lowest animate-bounce">
+<span class="material-symbols-outlined" data-icon="warning" style="font-size: 15px;">warning</span>
+</div>
+<!-- Glassmorphic Tooltip Inset -->
+<div class="absolute left-8 -top-3 w-56 p-2.5 rounded-xl bg-inverse-surface text-inverse-on-surface shadow-xl border border-white/10 opacity-95 pointer-events-none text-code-sm font-code-sm">
+<div class="flex items-center justify-between font-semibold text-secondary-fixed">
+<span>HazardReport #084</span>
+<span class="bg-error text-on-error px-1.5 py-0.2 rounded text-[10px]">Em Análise</span>
+</div>
+<p class="text-surface-dim mt-1 font-body-sm font-body-sm leading-tight">Buraco na ciclovia norte (acesso Bloco E). Risco moderado para patinetes.</p>
+<div class="mt-1.5 text-[10px] text-outline-variant flex justify-between">
+<span>Reportado há 42m</span>
+<span>Lat: -23.4719°</span>
+</div>
+</div>
+</div>
+<!-- Interactive Hazard / Event Pin 2 (Iluminação Portaria 2) -->
+<div class="absolute top-[18%] left-[81%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-20">
+<div class="flex items-center justify-center w-6 h-6 rounded-full bg-secondary text-on-secondary shadow-md border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined" data-icon="check_circle" style="font-size: 14px;">check_circle</span>
+</div>
+<div class="hidden group-hover:block absolute right-7 -top-2 w-52 p-2 rounded-xl bg-inverse-surface text-inverse-on-surface shadow-lg text-code-sm font-code-sm z-30">
+<div class="text-secondary-fixed font-semibold">Poste sem luz · Portaria 2</div>
+<p class="text-surface-dim text-body-sm font-body-sm">Manutenção preventiva finalizada às 14h20 pelo CTI.</p>
+</div>
+</div>
+<!-- Live Pedestrian / Cyclist Moving Cluster Badge -->
+<div class="absolute bottom-[28%] left-[28%] px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md border border-secondary text-secondary shadow-sm flex items-center gap-1.5 text-code-sm font-code-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-medium text-on-surface">Fluxo Ativo: 14 ciclistas/min</span>
+</div>
+<!-- Map Controls Dock (Zoom, SRID, Layer Floating Segment) -->
+<div class="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+<!-- Telemetry SRID Badge -->
+<div class="pointer-events-auto px-3 py-1.5 rounded-lg bg-inverse-surface/90 text-inverse-on-surface backdrop-blur-md border border-white/10 text-code-sm font-code-sm shadow-sm flex items-center gap-2">
+<span class="text-secondary-fixed">● GPS LIVE</span>
+<span>-23.4722° S, -47.4268° W</span>
+<span class="text-outline-variant">|</span>
+<span class="text-surface-dim">SRID: 4326 (WGS 84)</span>
+</div>
+<!-- Zoom & Utility Controller -->
+<div class="pointer-events-auto flex items-center gap-1 bg-surface-container-lowest border border-outline-variant/40 rounded-lg p-1 shadow-sm">
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container text-on-surface" title="Aumentar Zoom">
+<span class="material-symbols-outlined" data-icon="add" style="font-size: 18px;">add</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container text-on-surface" title="Diminuir Zoom">
+<span class="material-symbols-outlined" data-icon="remove" style="font-size: 18px;">remove</span>
+</button>
+<div class="h-4 w-px bg-outline-variant/50 mx-0.5"></div>
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container text-on-surface" title="Centralizar CampusZone">
+<span class="material-symbols-outlined" data-icon="my_location" style="font-size: 18px;">my_location</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container text-on-surface" title="Modo Satélite / Vetorial">
+<span class="material-symbols-outlined" data-icon="satellite_alt" style="font-size: 18px;">satellite_alt</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Map Footer Legend Bar -->
+<div class="px-4 py-2 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-between text-code-sm font-code-sm text-on-surface-variant">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-secondary rounded-full"></span>
+              Ciclovias Conectadas
+            </span>
+<span class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-tertiary-container rounded-full"></span>
+              Vias de Pedestres
+            </span>
+<span class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full border border-secondary border-dashed"></span>
+              Perímetro CampusZone
+            </span>
+</div>
+<span class="text-on-surface font-mono">Último refresh GeoJSON: há 12 segundos</span>
+</div>
+</section>
+<!-- RIGHT PANEL: DUAL WORKSTATION STACK (5 Columns) -->
+<div class="lg:col-span-5 flex flex-col gap-5">
+<!-- CARD A: INSIGHTENGINE IA WORKSTATION TILE (Dark Slate Pro Node) -->
+<div class="bg-primary-container text-on-primary border border-white/10 rounded-2xl p-5 shadow-md flex flex-col justify-between relative overflow-hidden">
+<!-- Subtle Glow Mesh Texture -->
+<div class="absolute -right-16 -top-16 w-48 h-48 bg-tertiary-container/40 rounded-full blur-3xl pointer-events-none"></div>
+<div>
+<!-- Header with glowing pill -->
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-on-tertiary-container/30 text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-size: 16px;">auto_awesome</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-surface-lowest font-medium tracking-tight">InsightEngine IA</h3>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-code-sm font-code-sm bg-tertiary-container/80 text-tertiary-fixed border border-on-tertiary-container/40">
+                Model: Gemini 1.5 Pro + Ollama Edge
+              </span>
+</div>
+<!-- Synthesis Analysis Inset Card -->
+<div class="mt-4 p-3.5 rounded-xl bg-white/[0.04] border border-white/10 backdrop-blur-sm">
+<div class="flex items-center gap-1.5 text-secondary-fixed text-label-sm font-label-sm uppercase tracking-wider font-semibold">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-size: 14px;">analytics</span>
+                Diagnóstico Sintético Geoespacial
+              </div>
+<p class="mt-2 text-body-md font-body-md text-surface-container leading-relaxed">
+                "Ocorrência de gargalo no fluxo cicloviário entre o <strong class="text-surface-lowest font-medium">Bloco B</strong> e a <strong class="text-surface-lowest font-medium">Biblioteca Central</strong> entre as <span class="font-mono text-secondary-fixed">17h40 e 18h15</span>. O risco de conflito pedestre-ciclista encontra-se elevado em <span class="text-error-container font-mono font-medium">+34%</span> durante trocas de aulas."
+              </p>
+</div>
+<!-- Concrete Tactical Recommendations -->
+<div class="mt-4 flex flex-col gap-2.5">
+<span class="text-label-sm font-label-sm text-surface-dim uppercase tracking-wider">Ações Recomendadas pelo Modelo</span>
+<div class="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 flex items-start gap-2.5 hover:bg-white/[0.05] transition-colors">
+<span class="flex items-center justify-center w-5 h-5 rounded-full bg-secondary text-surface-lowest text-code-sm font-code-sm font-semibold shrink-0 mt-0.5">1</span>
+<p class="text-body-sm font-body-sm text-surface-container">
+                  Implantar balizadores reflexivos e redutor suave de velocidade na curva de acesso ao <strong class="text-surface-lowest font-medium">Bloco E</strong>.
+                </p>
+</div>
+<div class="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 flex items-start gap-2.5 hover:bg-white/[0.05] transition-colors">
+<span class="flex items-center justify-center w-5 h-5 rounded-full bg-secondary text-surface-lowest text-code-sm font-code-sm font-semibold shrink-0 mt-0.5">2</span>
+<p class="text-body-sm font-body-sm text-surface-container">
+                  Expandir paraciclos inteligentes no Hub de Inovação (<strong class="text-surface-lowest font-medium">+20 vagas</strong> requeridas pela demanda de 13h–19h).
+                </p>
+</div>
+</div>
+</div>
+<!-- Live Action CTAs -->
+<div class="mt-5 pt-3.5 border-t border-white/10 flex items-center justify-between gap-2">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-on-secondary hover:bg-secondary/90 transition-transform active:scale-95 duration-150 text-label-md font-label-md font-medium">
+<span class="material-symbols-outlined" data-icon="send" style="font-size: 16px;">send</span>
+              Notificar Ciclistas via App
+            </button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-surface-lowest transition-colors text-label-md font-label-md">
+<span class="material-symbols-outlined" data-icon="description" style="font-size: 16px;">description</span>
+              Exportar Parecer CTI
+            </button>
+</div>
+</div>
+<!-- CARD B: DIVISÃO MODAL & MATRIZ DE DESLOCAMENTO -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-semibold">Divisão Modal do Campus</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">% Deslocamentos Validados em Sorocaba</p>
+</div>
+<span class="text-code-sm font-code-sm px-2 py-0.5 rounded bg-surface-container text-on-surface font-mono">Total: 100%</span>
+</div>
+<!-- Segmented Visual Bar -->
+<div class="w-full h-3.5 rounded-full bg-surface-container overflow-hidden flex mt-4 border border-outline-variant/30">
+<div class="bg-secondary h-full transition-all" style="width: 38%;" title="Caminhada: 38%"></div>
+<div class="bg-secondary-fixed h-full transition-all" style="width: 27%;" title="Bicicleta: 27%"></div>
+<div class="bg-on-tertiary-container h-full transition-all" style="width: 21%;" title="Transporte Público: 21%"></div>
+<div class="bg-outline h-full transition-all" style="width: 14%;" title="Carona Solidária: 14%"></div>
+</div>
+<!-- Modal Categories Grid -->
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="text-body-sm font-body-sm text-on-surface font-medium">Caminhada</span>
+</div>
+<span class="text-label-md font-label-md font-mono text-on-surface font-semibold">38%</span>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed"></span>
+<span class="text-body-sm font-body-sm text-on-surface font-medium">Bicicleta</span>
+</div>
+<span class="text-label-md font-label-md font-mono text-on-surface font-semibold">27%</span>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-on-tertiary-container"></span>
+<span class="text-body-sm font-body-sm text-on-surface font-medium">Ônibus / BRT</span>
+</div>
+<span class="text-label-md font-label-md font-mono text-on-surface font-semibold">21%</span>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+<span class="text-body-sm font-body-sm text-on-surface font-medium">Carona Solidária</span>
+</div>
+<span class="text-label-md font-label-md font-mono text-on-surface font-semibold">14%</span>
+</div>
+</div>
+<!-- Telemetry Metrics Split -->
+<div class="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-outline-variant/30">
+<div class="flex flex-col">
+<span class="text-code-sm font-code-sm text-on-surface-variant">Distância Média por Viagem</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-semibold font-mono mt-0.5">3,8 km</span>
+<span class="text-code-sm font-code-sm text-secondary">Dentro do raio urbano SmartCampus</span>
+</div>
+<div class="flex flex-col">
+<span class="text-code-sm font-code-sm text-on-surface-variant">Velocidade Média Cicloviária</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-semibold font-mono mt-0.5">14,2 km/h</span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">Zona segura segregada (< 20 km/h)</span>
+</div>
+</div>
+</div>
+<!-- Micro Footnote Action -->
+<div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-code-sm font-code-sm text-on-surface-variant">
+<span>Fonte: Odometria GPS + Check-in BLE</span>
+<a class="text-secondary font-medium hover:underline flex items-center gap-0.5" href="#detalhes">
+              Matriz Origem-Destino
+              <span class="material-symbols-outlined" data-icon="north_east" style="font-size: 13px;">north_east</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================= -->
+<!-- 5. MINIMAL INFRASTRUCTURE FOOTER (Shared Component Anchor) -->
+<!-- ========================================================= -->
+<footer class="w-full py-4 px-6 flex flex-col md:flex-row justify-between items-center text-body-sm text-on-surface-variant bg-surface-container-low border-t border-outline-variant/30 mt-6 gap-3">
+<!-- Brand / Laboratory Copyright -->
+<div class="flex items-center gap-2">
+<span class="text-label-md font-label-md text-on-surface font-semibold">
+        © 2025 EcoMove Campus Analytics · Laboratório de Cidades Inteligentes FACENS
+      </span>
+<span class="hidden sm:inline-block text-outline-variant">|</span>
+<span class="text-code-sm font-code-sm text-secondary font-mono">PostGIS 3.4 / PostgreSQL 16.2</span>
+</div>
+<!-- Infrastructure & Tech Links -->
+<div class="flex flex-wrap items-center gap-4 text-code-sm font-code-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#api">Documentação API PostGIS</a>
+<span class="text-outline-variant">·</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#cluster">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+        Status do Cluster IoT (Normal)
+      </a>
+<span class="text-outline-variant">·</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#governanca">Termos de Governança de Dados</a>
+<span class="text-outline-variant">·</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#cti">Suporte Técnico CTI</a>
+</div>
+</footer>
+</body></html>
