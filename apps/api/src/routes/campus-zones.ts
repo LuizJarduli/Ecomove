@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { Role } from "../auth/actor.js";
 import type { CampusZoneRepository } from "../campus-zones/campus-zone-repository.js";
 
 export function registerCampusZoneRoutes(app: FastifyInstance, zones: CampusZoneRepository) {
@@ -12,7 +13,7 @@ export function registerCampusZoneRoutes(app: FastifyInstance, zones: CampusZone
 
   app.get(
     "/v1/manager/campus-zones",
-    { config: { requiresAuth: true, requiresRole: "MOBILITY_MANAGER" } },
+    { config: { requiresAuth: true, requiresRole: Role.MobilityManager } },
     async () => zones.listAll(),
   );
 }

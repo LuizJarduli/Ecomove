@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 import Fastify, { type FastifyInstance } from "fastify";
 import type { AuthVerifier } from "./auth/auth-verifier.js";
-import { registerAuth, type Actor } from "./auth/actor.js";
+import { registerAuth, type Role } from "./auth/actor.js";
 import { registerMeRoutes } from "./routes/me.js";
 import { CampusZoneRepository } from "./campus-zones/campus-zone-repository.js";
 import { registerCampusZoneRoutes } from "./routes/campus-zones.js";
@@ -9,7 +9,7 @@ import { registerCampusZoneRoutes } from "./routes/campus-zones.js";
 declare module "fastify" {
   interface FastifyContextConfig {
     requiresAuth?: boolean;
-    requiresRole?: Actor["role"];
+    requiresRole?: Role;
   }
 }
 

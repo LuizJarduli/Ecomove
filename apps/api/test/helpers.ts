@@ -2,10 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import type { FastifyInstance } from "fastify";
 import { buildApp } from "../src/app.js";
 import { FakeAuthVerifier } from "../src/auth/fake-auth-verifier.js";
+import { insertFacensZone } from "../src/campus-zones/facens-zone.js";
 import { TEST_DATABASE_URL } from "./global-setup.js";
-
-export const FACENS_POLYGON_WKT =
-  "POLYGON((-47.4540 -23.4930, -47.4440 -23.4930, -47.4440 -23.4860, -47.4540 -23.4860, -47.4540 -23.4930))";
 
 export interface TestContext {
   app: FastifyInstance;
@@ -34,8 +32,4 @@ export async function createTestContext(): Promise<TestContext> {
   };
 }
 
-export async function seedCampusZone(prisma: PrismaClient) {
-  await prisma.$executeRaw`
-    INSERT INTO "CampusZone" (id, name, boundary, "isActive")
-    VALUES (gen_random_uuid()::text, 'Campus FACENS', ST_GeomFromText(${FACENS_POLYGON_WKT}, 4326), true)`;
-}
+export const seedCampusZone = insertFacensZone;

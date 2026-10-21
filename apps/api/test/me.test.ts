@@ -57,6 +57,33 @@ describe("GET /v1/me", () => {
     expect(await ctx.prisma.commuter.count()).toBe(0);
   });
 
+  it("reports zeroed trip totals for a new Commuter", async () => {
+    const res = await ctx.app.inject({ method: "GET", url: "/v1/me", headers: ctx.bearer("ana@facens.br") });
+
+    expect(res.json()).toMatchObject({ totalDistanceMeters: 0, totalCo2SavedGrams: 0 });
+  });
+
+  it("refuses a different Firebase identity claiming a linked MobilityManager email", async () => {
+    await ctx.prisma.mobilityManager.create({ data: { email: "ricardo@facens.br" } });
+    await ctx.app.inject({ method: "GET", url: "/v1/me", headers: ctx.bearer("ricardo@facens.br", "uid-real") });
+
+    const res = await ctx.app.inject({
+      method: "GET",
+      url: "/v1/me",
+      headers: ctx.bearer("ricardo@facens.br", "uid-impostor"),
+    });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("refuses a new Firebase identity reusing an existing Commuter email", async () => {
+    await ctx.app.inject({ method: "GET", url: "/v1/me", headers: ctx.bearer("ana@facens.br", "uid-1") });
+
+    const res = await ctx.app.inject({ method: "GET", url: "/v1/me", headers: ctx.bearer("ana@facens.br", "uid-2") });
+
+    expect(res.statusCode).toBe(409);
+  });
+
   it("rejects requests without a valid token", async () => {
     const missing = await ctx.app.inject({ method: "GET", url: "/v1/me" });
     const invalid = await ctx.app.inject({
