@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 const app = await buildApp({
   prisma,
   authVerifier: new FirebaseAuthVerifier(process.env.FIREBASE_PROJECT_ID || undefined),
+  corsOrigins: process.env.CORS_ORIGINS?.split(",").map((origin) => origin.trim()),
 });
 
 await app.listen({ port: Number(process.env.PORT ?? 3333), host: "0.0.0.0" });
