@@ -54,7 +54,6 @@ const HAZARD_CATEGORIES = [
     title: "Calçada Danificada",
     desc: "Buracos, desníveis ou bloqueios estruturais no acesso pedonal ao campus.",
     endorsements: 18,
-    status: "APPROVED",
     statusLabel: "Aprovada · +25 EcoPoints",
   },
   {
@@ -62,7 +61,6 @@ const HAZARD_CATEGORIES = [
     title: "Ciclovia Obstruída",
     desc: "Obstáculos, entulho ou sinalização apagada nos corredores cicloviários.",
     endorsements: 11,
-    status: "PENDING",
     statusLabel: "Em Análise · 30m Dedup",
   },
   {
@@ -70,7 +68,6 @@ const HAZARD_CATEGORIES = [
     title: "Iluminação Precária",
     desc: "Trechos escuros no entorno universitário durante o turno noturno.",
     endorsements: 24,
-    status: "APPROVED",
     statusLabel: "Prioridade Alta · BI",
   },
   {
@@ -78,8 +75,52 @@ const HAZARD_CATEGORIES = [
     title: "Ponto de Ônibus Degradado",
     desc: "Falta de cobertura, acessibilidade comprometida ou iluminação ausente.",
     endorsements: 9,
-    status: "RESOLVED",
     statusLabel: "Resolvida pelo Gestor",
+  },
+] as const;
+
+const STORY_CHAPTERS = [
+  {
+    chapter: "ATO I · COMUNIDADE ACADÊMICA",
+    tag: "APLICATIVO MOBILE FLUTTER · COMUNIDADE",
+    title: "Rastreamento GPS resiliente, Carpool QR e Carteira EcoPoints.",
+    subtitle:
+      "Beatriz registra seus deslocamentos até a FACENS mesmo em áreas de sombra de sinal graças à fila local SQLite, confirma caronas via QR Code e acumula até 100 EcoPoints por dia.",
+    bullets: [
+      "Validação espacial ST_Intersects contra o polígono oficial da CampusZone",
+      "Pareamento de CarpoolSession por código de 4 dígitos ou QR Code",
+      "Nudges personalizados de sustentabilidade via CommuterAiService",
+    ],
+    image: "/stitch/mobile-commuter.png",
+    aspect: "mobile" as const,
+  },
+  {
+    chapter: "ATO II · ZELADORIA URBANA & ECONOMIA",
+    tag: "DEDUPLICAÇÃO ESPACIAL 30M · LEDGER IMUTÁVEL",
+    title: "Ocorrências georreferenciadas sem duplicatas e estorno automático.",
+    subtitle:
+      "Ao detectar um relato ativo da mesma categoria em até 30 metros (ST_DWithin), o EcoMove sugere um endosso (+1 prioridade) em vez de duplicar pinos, creditando +25 EcoPoints quando aprovado pelo gestor.",
+    bullets: [
+      "Fotos comprimidas no cliente para WebP (< 300 KB) no plano Firebase Spark",
+      "Livro-razão imutável (PointTransaction) para auditoria integral de saldos",
+      "Vouchers de parceiros expiram em 7 dias com estorno automático de estoque e pontos",
+    ],
+    image: "/stitch/zeladoria-recompensas.png",
+    aspect: "desktop" as const,
+  },
+  {
+    chapter: "ATO III · BUSINESS INTELLIGENCE & IA",
+    tag: "PORTAL DO GESTOR · POSTGIS + INSIGHTENGINE",
+    title: "Decisões de infraestrutura guiadas por mapas de calor e IA.",
+    subtitle:
+      "Ricardo visualiza corredores críticos, divisão modal, emissões de CO₂ evitadas e aciona o InsightEngine (Gemini em nuvem ou Ollama local) para justificar investimentos viários no campus.",
+    bullets: [
+      "Mapas de calor PostGIS correlacionando fluxo de ciclistas/pedestres e ocorrências",
+      "Filtro institucional automático para e-mails verificados @facens.br",
+      "Facade de IA plugável (ADR-0004) alternando entre Gemini API e modelos locais",
+    ],
+    image: "/stitch/bi-dashboard.png",
+    aspect: "desktop" as const,
   },
 ] as const;
 
@@ -93,6 +134,8 @@ const TEAM_MEMBERS = [
 
 export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedManager: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const heroPinRef = useRef<HTMLDivElement>(null);
+  const storyPinRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<ShowcaseTab>("mobilidade");
 
   useEffect(() => {
@@ -100,7 +143,7 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
     if (prefersReducedMotion) return;
 
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
@@ -123,15 +166,10 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReducedMotion) return;
 
-      gsap.fromTo(
-        "[data-hero-reveal]",
-        { y: 36, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: "power3.out" },
-      );
-
+      // Floating atmospheric orbs
       gsap.to("[data-orb-float]", {
-        y: -24,
-        x: 16,
+        y: -28,
+        x: 18,
         duration: 5.5,
         repeat: -1,
         yoyo: true,
@@ -139,16 +177,120 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
         stagger: 0.8,
       });
 
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 1024px)", () => {
+        // 1. Pinned Hero Portal Scrub ("Only in FACENS" clip-path & scale zoom reveal)
+        if (heroPinRef.current) {
+          const heroTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: heroPinRef.current,
+              start: "top top",
+              end: "+=135%",
+              pin: true,
+              scrub: 1,
+            },
+          });
+
+          heroTl
+            .to(
+              "[data-hero-headline]",
+              {
+                scale: 0.86,
+                opacity: 0,
+                y: -60,
+                ease: "power2.inOut",
+              },
+              0,
+            )
+            .fromTo(
+              "[data-hero-portal]",
+              {
+                clipPath: "inset(22% 14% 22% 14% round 36px)",
+                scale: 0.9,
+              },
+              {
+                clipPath: "inset(0% 0% 0% 0% round 28px)",
+                scale: 1,
+                ease: "power2.inOut",
+              },
+              0,
+            )
+            .fromTo(
+              "[data-hero-portal-caption]",
+              { y: 36, opacity: 0 },
+              { y: 0, opacity: 1, ease: "power2.out" },
+              0.35,
+            );
+        }
+
+        // 2. Pinned 3-Act Storyteller Deck (Scrubbed chapter crossfade & card scale)
+        if (storyPinRef.current) {
+          const storyTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: storyPinRef.current,
+              start: "top top",
+              end: "+=260%",
+              pin: true,
+              scrub: 1,
+            },
+          });
+
+          // Progress bar fill
+          storyTl.fromTo(
+            "[data-story-progress]",
+            { scaleY: 0 },
+            { scaleY: 1, ease: "none", duration: 2 },
+            0,
+          );
+
+          // Transition Act 0 -> Act 1
+          storyTl
+            .to("[data-story-text='0']", { y: -40, opacity: 0, duration: 0.45, ease: "power2.inOut" }, 0.55)
+            .to("[data-story-card='0']", { scale: 0.9, opacity: 0, duration: 0.45, ease: "power2.inOut" }, 0.55)
+            .fromTo(
+              "[data-story-text='1']",
+              { y: 40, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" },
+              0.75,
+            )
+            .fromTo(
+              "[data-story-card='1']",
+              { y: 60, scale: 0.94, opacity: 0 },
+              { y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "power2.out" },
+              0.75,
+            );
+
+          // Transition Act 1 -> Act 2
+          storyTl
+            .to("[data-story-text='1']", { y: -40, opacity: 0, duration: 0.45, ease: "power2.inOut" }, 1.35)
+            .to("[data-story-card='1']", { scale: 0.9, opacity: 0, duration: 0.45, ease: "power2.inOut" }, 1.35)
+            .fromTo(
+              "[data-story-text='2']",
+              { y: 40, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" },
+              1.55,
+            )
+            .fromTo(
+              "[data-story-card='2']",
+              { y: 60, scale: 0.94, opacity: 0 },
+              { y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "power2.out" },
+              1.55,
+            );
+        }
+      });
+
+      // Standard staggered section reveals
       const sections = gsap.utils.toArray<HTMLElement>("[data-scroll-section]");
       sections.forEach((section) => {
         const items = section.querySelectorAll("[data-scroll-item]");
         gsap.fromTo(
           items.length > 0 ? items : section,
-          { y: 40, opacity: 0 },
+          { y: 44, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            duration: 0.8,
+            duration: 0.85,
             stagger: 0.1,
             ease: "power3.out",
             scrollTrigger: {
@@ -177,23 +319,20 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
               </span>
             </Link>
             <nav className="hidden items-center gap-7 text-sm font-medium text-[#6B6B6B] lg:flex">
-              <a href="#plataforma" className="transition-colors hover:text-[#111111]">
-                Plataforma
-              </a>
               <a href="#galeria" className="transition-colors hover:text-[#111111]">
-                Interfaces Stitch
+                Narrativa &amp; Telas
+              </a>
+              <a href="#plataforma" className="transition-colors hover:text-[#111111]">
+                Mapa PostGIS
               </a>
               <a href="#mobilidade" className="transition-colors hover:text-[#111111]">
-                Mobilidade &amp; PostGIS
+                Modais
               </a>
               <a href="#zeladoria" className="transition-colors hover:text-[#111111]">
                 Zeladoria 30m
               </a>
               <a href="#economia" className="transition-colors hover:text-[#111111]">
                 EcoPoints
-              </a>
-              <a href="#inteligencia" className="transition-colors hover:text-[#111111]">
-                BI &amp; IA
               </a>
               <a href="#equipe" className="transition-colors hover:text-[#111111]">
                 Equipe &amp; ODS
@@ -211,72 +350,214 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
         </div>
       </header>
 
-      <main className="pt-[132px] pb-[140px]">
-        {/* HERO SECTION */}
-        <section className="mx-auto mb-[120px] max-w-[1280px] px-6 md:px-8">
-          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
-            <div className="flex flex-col gap-6 lg:col-span-8">
-              <div data-hero-reveal className="flex flex-wrap items-center gap-2">
-                <span className="label-caps rounded-full border border-[#E7E7E4] bg-[#FCFCFB] px-3.5 py-1.5 text-[#111111]">
-                  Centro Universitário Facens · Sorocaba/SP
-                </span>
-                <span className="label-caps rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-emerald-900">
-                  ODS 9 · ODS 11 · ODS 13
-                </span>
-              </div>
-
-              <h1
-                data-hero-reveal
-                className="text-[48px] leading-[0.98] font-semibold tracking-[-0.04em] text-[#111111] sm:text-[68px] lg:text-[82px]"
-              >
-                Cada trajeto conta. Mobilidade urbana com precisão geoespacial.
-              </h1>
-
-              <div data-hero-reveal className="mt-2 flex flex-wrap items-center gap-4">
-                <Link
-                  href={isAuthenticatedManager ? "/painel" : "/login"}
-                  className="rounded-full bg-[#111111] px-7 py-3.5 text-sm font-medium text-white transition-all hover:opacity-90"
-                >
-                  {isAuthenticatedManager ? "Acessar Painel do Gestor" : "Entrar no Portal do Gestor"}
-                </Link>
-                <a
-                  href="#plataforma"
-                  className="rounded-full border border-[#C4C7C7] bg-transparent px-7 py-3.5 text-sm font-medium text-[#111111] transition-colors hover:bg-[#E5E2E1]/60"
-                >
-                  Explorar Arquitetura
-                </a>
-              </div>
+      <main className="pb-[140px]">
+        {/* PINNED CINEMATIC HERO SECTION ("ONLY IN FACENS" GSAP SCRUBBED MASK REVEAL) */}
+        <section
+          ref={heroPinRef}
+          className="relative mx-auto flex min-h-screen max-w-[1360px] flex-col justify-center overflow-hidden px-6 pt-[96px] pb-12 md:px-8"
+        >
+          {/* Foreground Typographic Lockup */}
+          <div data-hero-headline className="relative z-20 mx-auto max-w-4xl text-center">
+            <div className="mb-5 flex flex-wrap items-center justify-center gap-2">
+              <span className="label-caps rounded-full border border-[#E7E7E4] bg-[#FCFCFB] px-3.5 py-1.5 text-[#111111]">
+                Centro Universitário Facens · Sorocaba/SP
+              </span>
+              <span className="label-caps rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-emerald-900">
+                ODS 9 · ODS 11 · ODS 13
+              </span>
             </div>
 
-            <div data-hero-reveal className="flex flex-col justify-between gap-6 lg:col-span-4 lg:pt-12">
-              <p className="text-[17px] leading-[1.6] text-[#6B6B6B]">
-                O <strong className="font-medium text-[#111111]">EcoMove</strong> integra um aplicativo móvel em
-                Flutter para registro de deslocamentos sustentáveis e zeladoria cidadã a um portal web para gestores com
-                geoprocessamento PostGIS, Business Intelligence e análise por IA.
-              </p>
-              <div className="grid grid-cols-3 gap-3 rounded-2xl border border-[#E7E7E4] bg-[#FCFCFB] p-4">
-                <div>
-                  <p className="label-caps text-[#6B6B6B]">Geofence</p>
-                  <p className="mt-1 text-lg font-semibold">SRID 4326</p>
-                </div>
-                <div className="border-l border-[#E7E7E4] pl-3">
-                  <p className="label-caps text-[#6B6B6B]">Teto Diário</p>
-                  <p className="mt-1 text-lg font-semibold">100 pts</p>
-                </div>
-                <div className="border-l border-[#E7E7E4] pl-3">
-                  <p className="label-caps text-[#6B6B6B]">Dedup</p>
-                  <p className="mt-1 text-lg font-semibold">30 metros</p>
-                </div>
+            <h1 className="text-[44px] leading-[0.95] font-semibold tracking-[-0.04em] text-[#111111] sm:text-[68px] lg:text-[84px]">
+              Cada trajeto conta. Mobilidade urbana com precisão geoespacial.
+            </h1>
+
+            <p className="mx-auto mt-5 max-w-2xl text-[17px] leading-[1.6] text-[#6B6B6B]">
+              Role para expandir o ecossistema <strong className="font-medium text-[#111111]">EcoMove</strong>:
+              aplicativo móvel em Flutter para deslocamentos sustentáveis e zeladoria cidadã integrado ao Portal do
+              Gestor com PostGIS, Business Intelligence e IA.
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href={isAuthenticatedManager ? "/painel" : "/login"}
+                className="rounded-full bg-[#111111] px-7 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              >
+                {isAuthenticatedManager ? "Acessar Painel do Gestor" : "Entrar no Portal do Gestor"}
+              </Link>
+              <a
+                href="#plataforma"
+                className="rounded-full border border-[#C4C7C7] bg-[#FCFCFB]/80 px-7 py-3 text-sm font-medium text-[#111111] backdrop-blur-xs transition-colors hover:bg-[#E5E2E1]/60"
+              >
+                Testar Mapa PostGIS Ao Vivo
+              </a>
+            </div>
+          </div>
+
+          {/* Scrub-Expanded Architectural Portal Window */}
+          <div
+            data-hero-portal
+            className="relative z-10 mt-8 overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#1C1B1B] p-4 shadow-2xl md:p-6"
+          >
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-2 text-xs text-zinc-400">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                <span className="label-caps text-white">EcoMove · Visão Geral de Telemetria &amp; PostGIS</span>
+              </div>
+              <span className="font-mono text-[11px] text-zinc-400">
+                SRID 4326 · ST_Intersects(CampusZone) · ST_DWithin(30m)
+              </span>
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#F7F7F5]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/stitch/bi-dashboard.png"
+                alt="EcoMove — Painel de Business Intelligence e Mapa Geoespacial PostGIS"
+                className="max-h-[520px] w-full object-cover object-top"
+              />
+            </div>
+
+            <div
+              data-hero-portal-caption
+              className="mt-4 grid grid-cols-2 gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-white backdrop-blur-md sm:grid-cols-4"
+            >
+              <div>
+                <p className="label-caps text-zinc-400">Geofence Universitário</p>
+                <p className="mt-1 text-base font-semibold">Campus FACENS</p>
+              </div>
+              <div>
+                <p className="label-caps text-zinc-400">Teto Diário de Viagens</p>
+                <p className="mt-1 text-base font-semibold text-emerald-400">100 EcoPoints / dia</p>
+              </div>
+              <div>
+                <p className="label-caps text-zinc-400">Deduplicação Espacial</p>
+                <p className="mt-1 text-base font-semibold">Raio de 30 metros</p>
+              </div>
+              <div>
+                <p className="label-caps text-zinc-400">Motor de Inteligência</p>
+                <p className="mt-1 text-base font-semibold text-indigo-300">Gemini ⇄ Ollama</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* INTERACTIVE HERO SHOWCASE PANEL (Auralis Glass + Orbs + Live PostGIS Map) */}
-        <section id="plataforma" className="mx-auto mb-[160px] max-w-[1280px] px-6 md:px-8">
+        {/* PINNED 3-ACT STORYTELLER DECK (LEONIDA-STYLE SCRUBBED CHAPTER REVEALS) */}
+        <section id="galeria" className="mx-auto mb-[140px] max-w-[1280px] px-6 md:px-8">
+          {/* Desktop Pinned Scrub Experience */}
           <div
-            data-hero-reveal
-            className="relative flex min-h-[620px] flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#F3F2EF] p-6 md:p-8"
+            ref={storyPinRef}
+            className="hidden min-h-screen flex-col justify-center py-16 lg:flex"
+          >
+            <div className="mb-8 flex items-center justify-between">
+              <span className="label-caps rounded-full bg-[#E5E2E1] px-3.5 py-1.5 text-[#111111]">
+                Arquitetura em 3 Atos · Role para Navegar Pelas Camadas
+              </span>
+              <span className="font-mono text-xs text-[#6B6B6B]">
+                Design System Auralis · Gerado via Stitch MCP
+              </span>
+            </div>
+
+            <div className="grid grid-cols-12 items-center gap-10 rounded-[28px] border border-[#E7E7E4] bg-[#F3F2EF] p-10">
+              {/* Left 5 Cols: Scrubbed Narrative Chapters + Vertical Progress Rail */}
+              <div className="relative col-span-5 flex min-h-[440px] items-center pl-6">
+                <div className="absolute top-6 bottom-6 left-0 w-1 overflow-hidden rounded-full bg-[#E5E2E1]">
+                  <div
+                    data-story-progress
+                    className="h-full w-full origin-top bg-[#111111]"
+                  />
+                </div>
+
+                {STORY_CHAPTERS.map((item, idx) => (
+                  <div
+                    key={item.chapter}
+                    data-story-text={idx}
+                    className={`${
+                      idx === 0 ? "relative opacity-100" : "pointer-events-none absolute inset-0 pl-6 opacity-0"
+                    } flex flex-col justify-center space-y-5`}
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="label-caps rounded bg-[#111111] px-2.5 py-1 text-white">
+                        {item.chapter}
+                      </span>
+                      <span className="label-caps rounded bg-[#FCFCFB] px-2.5 py-1 text-emerald-800">
+                        {item.tag}
+                      </span>
+                    </div>
+                    <h2 className="text-[36px] leading-[1.08] font-semibold tracking-[-0.03em] text-[#111111]">
+                      {item.title}
+                    </h2>
+                    <p className="text-[16px] leading-[1.6] text-[#6B6B6B]">{item.subtitle}</p>
+                    <ul className="space-y-2.5 border-t border-[#E7E7E4] pt-4 text-sm text-[#111111]">
+                      {item.bullets.map((bullet) => (
+                        <li key={bullet} className="flex items-start gap-2.5">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right 7 Cols: Scrubbed Visual Stage */}
+              <div className="relative col-span-7 flex min-h-[540px] items-center justify-center overflow-hidden rounded-[24px] border border-[#E7E7E4] bg-[#FCFCFB] p-6">
+                {STORY_CHAPTERS.map((item, idx) => (
+                  <div
+                    key={item.chapter}
+                    data-story-card={idx}
+                    className={`${
+                      idx === 0 ? "relative opacity-100" : "pointer-events-none absolute inset-6 opacity-0"
+                    } flex h-full w-full items-center justify-center`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className={
+                        item.aspect === "mobile"
+                          ? "max-h-[500px] w-auto rounded-[24px] border border-[#E7E7E4] shadow-lg"
+                          : "max-h-[500px] w-full rounded-2xl border border-[#E7E7E4] object-cover object-top shadow-md"
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile / Tablet Stacked Fallback */}
+          <div className="space-y-8 lg:hidden">
+            {STORY_CHAPTERS.map((item) => (
+              <div
+                key={item.chapter}
+                className="space-y-5 rounded-[24px] border border-[#E7E7E4] bg-[#FCFCFB] p-6"
+              >
+                <span className="label-caps rounded bg-[#111111] px-2.5 py-1 text-white">{item.chapter}</span>
+                <h3 className="text-2xl font-semibold tracking-tight">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-[#6B6B6B]">{item.subtitle}</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full rounded-2xl border border-[#E7E7E4] object-cover object-top"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* INTERACTIVE LIVE POSTGIS STAGE */}
+        <section id="plataforma" data-scroll-section className="mx-auto mb-[160px] max-w-[1280px] px-6 md:px-8">
+          <div data-scroll-item className="mb-8 flex items-center gap-4">
+            <span className="label-caps rounded-full bg-[#E5E2E1] px-3.5 py-1.5 text-[#111111]">
+              Demonstração Interativa · Geoprocessamento PostGIS Ao Vivo
+            </span>
+            <div className="h-px flex-grow bg-[#E7E7E4]" />
+          </div>
+
+          <div
+            data-scroll-item
+            className="relative flex min-h-[600px] flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#F3F2EF] p-6 md:p-8"
           >
             {/* Atmospheric Gradient Orbs */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -483,108 +764,6 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
               >
                 {isAuthenticatedManager ? "Ir para o Painel" : "Acessar Painel"}
               </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 0.5: STITCH GENERATED INTERFACE GALLERY */}
-        <section id="galeria" data-scroll-section className="mx-auto mb-[160px] max-w-[1280px] px-6 md:px-8">
-          <div data-scroll-item className="mb-8 flex items-center gap-4">
-            <span className="label-caps rounded-full bg-[#E5E2E1] px-3.5 py-1.5 text-[#111111]">
-              Galeria de Interfaces · Auralis Visual Scaffolding
-            </span>
-            <div className="h-px flex-grow bg-[#E7E7E4]" />
-          </div>
-
-          <div data-scroll-item className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <h2 className="text-[36px] leading-[1.08] font-semibold tracking-[-0.03em] sm:text-[48px]">
-                Visão completa do ecossistema Web e Mobile.
-              </h2>
-            </div>
-            <div className="flex items-end lg:col-span-5">
-              <p className="text-[17px] leading-[1.6] text-[#6B6B6B]">
-                Telas projetadas no sistema de design <strong className="font-medium text-[#111111]">Auralis</strong>{" "}
-                combinando o Portal do Gestor de Mobilidade (BI, PostGIS, Zeladoria 30m e Recompensas) com o aplicativo
-                Flutter utilizado pela comunidade acadêmica.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            {/* Desktop Screen 1: BI & PostGIS Map */}
-            <div
-              data-scroll-item
-              className="flex flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#FCFCFB] p-6 lg:col-span-8"
-            >
-              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <span className="label-caps text-emerald-800">Portal Web · Visão Geral BI &amp; PostGIS</span>
-                  <h3 className="mt-1 text-xl font-semibold tracking-tight">
-                    Monitoramento Espacial, Divisão Modal e InsightEngine IA
-                  </h3>
-                </div>
-                <span className="label-caps rounded-full border border-[#E7E7E4] bg-[#F3F2EF] px-3 py-1 text-[#111111]">
-                  Desktop · 12 Colunas
-                </span>
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-[#E7E7E4] bg-[#F3F2EF]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/stitch/bi-dashboard.png"
-                  alt="EcoMove — Painel de Business Intelligence e Mapa Geoespacial PostGIS"
-                  className="h-auto w-full object-cover object-top transition-transform duration-500 hover:scale-[1.02]"
-                />
-              </div>
-            </div>
-
-            {/* Mobile Screen: Flutter App */}
-            <div
-              data-scroll-item
-              className="flex flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#F3F2EF] p-6 lg:col-span-4"
-            >
-              <div className="mb-5">
-                <span className="label-caps text-emerald-800">App Mobile Flutter · Commuter</span>
-                <h3 className="mt-1 text-xl font-semibold tracking-tight">
-                  Rastreamento GPS, Carpool QR &amp; Carteira EcoPoints
-                </h3>
-              </div>
-              <div className="mx-auto max-w-[290px] overflow-hidden rounded-[24px] border border-[#E7E7E4] bg-[#FCFCFB] shadow-xs">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/stitch/mobile-commuter.png"
-                  alt="EcoMove Campus — Aplicativo Mobile Flutter"
-                  className="h-auto w-full object-cover object-top"
-                />
-              </div>
-            </div>
-
-            {/* Desktop Screen 2: Zeladoria 30m & Rewards */}
-            <div
-              data-scroll-item
-              className="flex flex-col justify-between overflow-hidden rounded-[28px] border border-[#E7E7E4] bg-[#FCFCFB] p-6 lg:col-span-12"
-            >
-              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <span className="label-caps text-emerald-800">
-                    Portal Web · Zeladoria Cidadã (ST_DWithin 30m) &amp; Ledger Imutável
-                  </span>
-                  <h3 className="mt-1 text-xl font-semibold tracking-tight">
-                    Fila de Validação de Ocorrências (+25 EcoPoints), Catálogo de Parceiros e Estorno em 7 Dias
-                  </h3>
-                </div>
-                <span className="label-caps rounded-full border border-[#E7E7E4] bg-[#F3F2EF] px-3 py-1 text-[#111111]">
-                  Moderação &amp; Economia
-                </span>
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-[#E7E7E4] bg-[#F3F2EF]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/stitch/zeladoria-recompensas.png"
-                  alt="EcoMove — Central de Zeladoria Urbana e Catálogo de Recompensas"
-                  className="max-h-[760px] w-full object-cover object-top transition-transform duration-500 hover:scale-[1.01]"
-                />
-              </div>
             </div>
           </div>
         </section>

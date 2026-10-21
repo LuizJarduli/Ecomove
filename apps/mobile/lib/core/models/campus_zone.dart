@@ -37,13 +37,20 @@ class CampusZone extends Equatable {
     if (boundaryPoints.isEmpty) {
       return const LatLng(-23.4895, -47.4490);
     }
+    final uniqueVertices =
+        boundaryPoints.length > 1 && boundaryPoints.first == boundaryPoints.last
+            ? boundaryPoints.sublist(0, boundaryPoints.length - 1)
+            : boundaryPoints;
     double latSum = 0;
     double lngSum = 0;
-    for (final point in boundaryPoints) {
+    for (final point in uniqueVertices) {
       latSum += point.latitude;
       lngSum += point.longitude;
     }
-    return LatLng(latSum / boundaryPoints.length, lngSum / boundaryPoints.length);
+    return LatLng(
+      latSum / uniqueVertices.length,
+      lngSum / uniqueVertices.length,
+    );
   }
 
   @override
