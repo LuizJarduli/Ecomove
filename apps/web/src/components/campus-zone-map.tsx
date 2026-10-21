@@ -3,11 +3,12 @@
 import "leaflet/dist/leaflet.css";
 import type { LatLngBoundsExpression } from "leaflet";
 import { geoJSON } from "leaflet";
+import { useMemo } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import type { CampusZone } from "@/lib/api";
 
 export default function CampusZoneMap({ zone }: { zone: CampusZone }) {
-  const bounds = geoJSON(zone.boundary).getBounds() as LatLngBoundsExpression;
+  const bounds = useMemo(() => geoJSON(zone.boundary).getBounds() as LatLngBoundsExpression, [zone.boundary]);
 
   return (
     <MapContainer bounds={bounds} className="h-[480px] w-full rounded-lg" scrollWheelZoom>

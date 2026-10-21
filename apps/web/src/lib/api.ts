@@ -1,16 +1,10 @@
+import "server-only";
 import type { Polygon } from "geojson";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
+const API_URL = process.env.API_URL ?? "http://localhost:3333";
 
 export type Actor =
-  | {
-      role: "COMMUTER";
-      id: string;
-      email: string;
-      name: string | null;
-      isInstitutional: boolean;
-      ecoPointsBalance: number;
-    }
+  | { role: "COMMUTER"; id: string; email: string; name: string | null }
   | { role: "MOBILITY_MANAGER"; id: string; email: string; name: string | null; department: string | null };
 
 export interface CampusZone {
@@ -18,6 +12,11 @@ export interface CampusZone {
   name: string;
   isActive: boolean;
   boundary: Polygon;
+}
+
+export interface SessionCredential {
+  sessionCookie: string;
+  expiresInMs: number;
 }
 
 export class ApiError extends Error {
@@ -29,9 +28,15 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, idToken: string): Promise<T> {
+async function request<T>(path: string, init: RequestInit & { token?: string } = {}): Promise<T> {
+  const { token, ...rest } = init;
   const response = await fetch(`${API_URL}${path}`, {
-    headers: { authorization: `Bearer ${idToken}` },
+    ...rest,
+    cache: "no-store",
+    headers: {
+      ...(rest.body ? { "content-type": "application/json" } : {}),
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
@@ -40,6 +45,7 @@ async function request<T>(path: string, idToken: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export const fetchMe = (idToken: string) => request<Actor>("/v1/me", idToken);
-export const fetchManagerCampusZones = (idToken: string) =>
-  request<CampusZone[]>("/v1/manager/campus-zones", idToken);
+export const fetchMe = (token: string) => request<Actor>("/v1/me", { token });
+export const fetchActiveCampusZone = (token: string) => request<CampusZone>("/v1/campus-zones/active", { token });
+export const exchangeIdToken = (idToken: string) =>
+  request<SessionCredential>("/v1/auth/session", { method: "POST", body: JSON.stringify({ idToken }) });
