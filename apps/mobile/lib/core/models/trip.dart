@@ -201,3 +201,33 @@ class PointTransaction extends Equatable {
   @override
   List<Object?> get props => [id, commuterId, amount, reason, tripId, createdAt];
 }
+
+class CarpoolSession extends Equatable {
+  final String id;
+  final String driverId;
+  final String joinCode;
+  final String status;
+  final int participantCount;
+
+  const CarpoolSession({
+    required this.id,
+    required this.driverId,
+    required this.joinCode,
+    required this.status,
+    required this.participantCount,
+  });
+
+  factory CarpoolSession.fromJson(Map<String, dynamic> json) {
+    final participants = json['participants'] as List<dynamic>? ?? const [];
+    return CarpoolSession(
+      id: json['id'] as String,
+      driverId: json['driverId'] as String,
+      joinCode: json['joinCode'] as String,
+      status: json['status'] as String,
+      participantCount: participants.length,
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, driverId, joinCode, status, participantCount];
+}

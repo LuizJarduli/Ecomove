@@ -70,6 +70,7 @@ class FakeEcoMoveApiRepository implements EcoMoveApiRepository {
     required String idToken,
     required TransportMode transportMode,
     required List<GpsCoordinate> coordinates,
+    String? carpoolSessionId,
   }) async {
     final now = DateTime.utc(2026, 10, 21, 10, 10);
     final trip = Trip(
@@ -113,6 +114,31 @@ class FakeEcoMoveApiRepository implements EcoMoveApiRepository {
   @override
   Future<List<PointTransaction>> fetchMyLedger(String idToken) async =>
       List.of(_ledger);
+
+  @override
+  Future<CarpoolSession> createCarpoolSession(String idToken) async {
+    return const CarpoolSession(
+      id: 'carpool-1',
+      driverId: 'commuter-1',
+      joinCode: 'EC42',
+      status: 'OPEN',
+      participantCount: 1,
+    );
+  }
+
+  @override
+  Future<CarpoolSession> joinCarpoolSession({
+    required String idToken,
+    required String joinCode,
+  }) async {
+    return CarpoolSession(
+      id: 'carpool-1',
+      driverId: 'driver-1',
+      joinCode: joinCode.toUpperCase(),
+      status: 'OPEN',
+      participantCount: 2,
+    );
+  }
 }
 
 void main() {

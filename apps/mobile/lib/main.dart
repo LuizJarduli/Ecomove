@@ -242,6 +242,13 @@ class CommuterHomeScreen extends StatefulWidget {
 
 class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
   int _selectedTabIndex = 0;
+  final _joinCodeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _joinCodeController.dispose();
+    super.dispose();
+  }
 
   static const List<LatLng> _demoCampusCorridor = [
     LatLng(-23.4900, -47.4540),
@@ -427,6 +434,7 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
                 TransportMode.walk,
                 TransportMode.bicycle,
                 TransportMode.publicTransit,
+                TransportMode.carpool,
               ])
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
@@ -447,6 +455,84 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
           ),
         ),
         const SizedBox(height: 8),
+        if (trackerState.selectedMode == TransportMode.carpool)
+          Container(
+            key: const Key('carpool_panel'),
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFCFCFB),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE7E7E4)),
+            ),
+            child: trackerState.activeCarpoolSession != null
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'CarpoolSession Ativa · Código QR/PIN: ${trackerState.activeCarpoolSession!.joinCode}',
+                        key: const Key('active_carpool_code'),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        '${trackerState.activeCarpoolSession!.participantCount} participantes',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF006C49),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      OutlinedButton(
+                        key: const Key('create_carpool_button'),
+                        onPressed: () {
+                          context.read<TripTrackerBloc>().add(
+                                TripCarpoolCreateRequested(
+                                  widget.state.idToken,
+                                ),
+                              );
+                        },
+                        child: const Text('Criar Carona (QR / Código)'),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: SizedBox(
+                          height: 36,
+                          child: TextField(
+                            key: const Key('join_carpool_input'),
+                            controller: _joinCodeController,
+                            decoration: const InputDecoration(
+                              hintText: 'Código 4 dígitos',
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      FilledButton(
+                        key: const Key('join_carpool_button'),
+                        onPressed: () {
+                          context.read<TripTrackerBloc>().add(
+                                TripCarpoolJoinRequested(
+                                  idToken: widget.state.idToken,
+                                  joinCode: _joinCodeController.text,
+                                ),
+                              );
+                        },
+                        child: const Text('Entrar em Carona'),
+                      ),
+                    ],
+                  ),
+          ),
         if (completedTrip != null)
           Container(
             key: const Key('trip_summary_card'),

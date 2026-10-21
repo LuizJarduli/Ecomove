@@ -9,6 +9,8 @@ import { CampusZoneRepository } from "./campus-zones/campus-zone-repository.js";
 import { registerCampusZoneRoutes } from "./routes/campus-zones.js";
 import { TripRepository } from "./trips/trip-repository.js";
 import { registerTripRoutes } from "./routes/trips.js";
+import { CarpoolRepository } from "./carpool/carpool-repository.js";
+import { registerCarpoolRoutes } from "./routes/carpool-sessions.js";
 
 declare module "fastify" {
   interface FastifyContextConfig {
@@ -32,6 +34,7 @@ export async function buildApp(deps: AppDependencies): Promise<FastifyInstance> 
   registerMeRoutes(app);
   registerCampusZoneRoutes(app, new CampusZoneRepository(deps.prisma));
   registerTripRoutes(app, new TripRepository(deps.prisma));
+  registerCarpoolRoutes(app, new CarpoolRepository(deps.prisma));
   await app.ready();
   return app;
 }

@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
 export const transportModeSchema = z.enum(["WALK", "BICYCLE", "PUBLIC_TRANSIT", "CARPOOL"]);
@@ -33,6 +33,7 @@ export const tripDtoSchema = z.object({
   co2SavedGrams: z.number(),
   ecoPointsEarned: z.number().int(),
   rejectionReason: z.string().nullable(),
+  carpoolSessionId: z.string().nullable().optional(),
   startedAt: z.string(),
   endedAt: z.string(),
   createdAt: z.string(),
@@ -45,6 +46,8 @@ export const pointTransactionDtoSchema = z.object({
   amount: z.number().int(),
   reason: pointTransactionReasonSchema,
   tripId: z.string().nullable(),
+  hazardReportId: z.string().nullable().optional(),
+  redemptionId: z.string().nullable().optional(),
   createdAt: z.string(),
 });
 export type PointTransactionDto = z.infer<typeof pointTransactionDtoSchema>;
@@ -59,6 +62,7 @@ export type GpsCoordinateInput = z.infer<typeof gpsCoordinateInputSchema>;
 export const createTripInputSchema = z.object({
   transportMode: transportModeSchema,
   coordinates: z.array(gpsCoordinateInputSchema).min(2),
+  carpoolSessionId: z.string().min(1).optional(),
 });
 export type CreateTripInput = z.infer<typeof createTripInputSchema>;
 
@@ -116,6 +120,15 @@ export class InvalidTripTrajectoryError extends Error {
   }
 }
 
+export class TripStateTransitionError extends Error {
+  constructor(
+    readonly statusCode: 400 | 404,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
 interface SpatialEvaluationRow {
   distanceMeters: number;
   intersectsCampus: boolean;
@@ -135,6 +148,7 @@ interface TripRow {
   co2SavedGrams: number;
   ecoPointsEarned: number;
   rejectionReason: string | null;
+  carpoolSessionId: string | null;
   startedAt: Date;
   endedAt: Date;
   createdAt: Date;
@@ -152,6 +166,26 @@ function toTripDto(row: TripRow): TripDto {
     endedAt: row.endedAt.toISOString(),
     createdAt: row.createdAt.toISOString(),
   });
+}
+
+async function computeCappedTripPoints(
+  tx: Prisma.TransactionClient,
+  commuterId: string,
+  rawPoints: number,
+): Promise<number> {
+  if (rawPoints <= 0) return 0;
+  await tx.$queryRaw`SELECT id FROM "Commuter" WHERE id = ${commuterId} FOR UPDATE`;
+  const [dailyRow] = await tx.$queryRaw<Array<{ earnedToday: number }>>`
+    SELECT COALESCE(SUM(amount), 0)::int AS "earnedToday"
+    FROM "PointTransaction"
+    WHERE "commuterId" = ${commuterId}
+      AND reason = 'TRIP_VALIDATED'::"PointTransactionReason"
+      AND ("createdAt" AT TIME ZONE 'America/Sao_Paulo')::date =
+          (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date
+  `;
+  const earnedToday = dailyRow?.earnedToday ?? 0;
+  const remainingCap = Math.max(0, DAILY_TRIP_ECOPOINTS_CAP - earnedToday);
+  return Math.min(rawPoints, remainingCap);
 }
 
 export class TripRepository {
@@ -227,8 +261,47 @@ export class TripRepository {
     const rule = MODE_RULES[input.transportMode];
     let status: TripStatusDto;
     let rejectionReason: string | null = null;
+    let linkedCarpoolSessionId: string | null = input.carpoolSessionId ?? null;
 
-    if (!intersectsCampus) {
+    if (input.transportMode === "CARPOOL") {
+      if (!linkedCarpoolSessionId) {
+        status = "REJECTED";
+        rejectionReason =
+          "CARPOOL_SESSION_REQUIRED: Sessão de carona (QR / Código) obrigatória para Carona Solidária.";
+      } else {
+        const session = await this.prisma.carpoolSession.findUnique({
+          where: { id: linkedCarpoolSessionId },
+          include: { participants: true },
+        });
+        const isParticipant = session?.participants.some((p) => p.commuterId === commuterId) ?? false;
+        if (!session || !isParticipant) {
+          status = "REJECTED";
+          rejectionReason =
+            "CARPOOL_SESSION_INVALID: Usuário não vinculado a esta sessão de carona.";
+          linkedCarpoolSessionId = null;
+        } else if (session.participants.length < 2) {
+          status = "REJECTED";
+          rejectionReason =
+            "CARPOOL_MIN_PARTICIPANTS: Carona Solidária exige no mínimo 2 participantes pareados.";
+        } else if (!intersectsCampus) {
+          status = "REJECTED";
+          rejectionReason =
+            "OUTSIDE_CAMPUS_ZONE: O trajeto não intersecta a CampusZone ativa da FACENS.";
+        } else if (distanceMeters < MIN_TRIP_DISTANCE_METERS) {
+          status = "REJECTED";
+          rejectionReason = "MIN_DISTANCE_NOT_MET: Distância mínima de 300 metros não atingida.";
+        } else if (
+          avgSpeedKmh > rule.hardRejectAvgSpeedKmh ||
+          peakSpeedKmh > rule.hardRejectPeakSpeedKmh
+        ) {
+          status = "REJECTED";
+          rejectionReason = "SPEED_LIMIT_EXCEEDED: Velocidade incompatível com o modal declarado.";
+        } else {
+          // Will be upgraded to VALIDATED inside transaction if peer already arrived
+          status = "PENDING_REVIEW";
+        }
+      }
+    } else if (!intersectsCampus) {
       status = "REJECTED";
       rejectionReason = "OUTSIDE_CAMPUS_ZONE: O trajeto não intersecta a CampusZone ativa da FACENS.";
     } else if (distanceMeters < MIN_TRIP_DISTANCE_METERS) {
@@ -243,27 +316,37 @@ export class TripRepository {
       status = "VALIDATED";
     }
 
-    const co2SavedGrams =
-      status === "VALIDATED" ? Math.round((distanceMeters / 1000) * rule.co2GramsPerKm * 100) / 100 : 0;
-    const rawPoints = status === "VALIDATED" ? Math.round((distanceMeters / 1000) * rule.pointsPerKm) : 0;
-
     const insertedRow = await this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT id FROM "Commuter" WHERE id = ${commuterId} FOR UPDATE`;
-
-      let ecoPointsEarned = 0;
-      if (status === "VALIDATED" && rawPoints > 0) {
-        const [dailyRow] = await tx.$queryRaw<Array<{ earnedToday: number }>>`
-          SELECT COALESCE(SUM(amount), 0)::int AS "earnedToday"
-          FROM "PointTransaction"
-          WHERE "commuterId" = ${commuterId}
-            AND reason = 'TRIP_VALIDATED'::"PointTransactionReason"
-            AND ("createdAt" AT TIME ZONE 'America/Sao_Paulo')::date =
-                (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date
-        `;
-        const earnedToday = dailyRow?.earnedToday ?? 0;
-        const remainingCap = Math.max(0, DAILY_TRIP_ECOPOINTS_CAP - earnedToday);
-        ecoPointsEarned = Math.min(rawPoints, remainingCap);
+      // Check if peer Carpool participant already arrived in CampusZone
+      let peerTripsToValidate: Array<{ id: string; commuterId: string; distanceMeters: number }> = [];
+      if (
+        input.transportMode === "CARPOOL" &&
+        status === "PENDING_REVIEW" &&
+        linkedCarpoolSessionId &&
+        avgSpeedKmh <= rule.maxCleanAvgSpeedKmh &&
+        peakSpeedKmh <= rule.maxCleanPeakSpeedKmh
+      ) {
+        const existingSessionTrips = await tx.trip.findMany({
+          where: {
+            carpoolSessionId: linkedCarpoolSessionId,
+            commuterId: { not: commuterId },
+            status: { in: ["PENDING_REVIEW", "VALIDATED"] },
+          },
+          select: { id: true, commuterId: true, distanceMeters: true, status: true },
+        });
+        if (existingSessionTrips.length >= 1) {
+          status = "VALIDATED";
+          peerTripsToValidate = existingSessionTrips
+            .filter((t) => t.status === "PENDING_REVIEW")
+            .map((t) => ({ id: t.id, commuterId: t.commuterId, distanceMeters: t.distanceMeters }));
+        }
       }
+
+      const co2SavedGrams =
+        status === "VALIDATED" ? Math.round((distanceMeters / 1000) * rule.co2GramsPerKm * 100) / 100 : 0;
+      const rawPoints = status === "VALIDATED" ? Math.round((distanceMeters / 1000) * rule.pointsPerKm) : 0;
+      const ecoPointsEarned =
+        status === "VALIDATED" ? await computeCappedTripPoints(tx, commuterId, rawPoints) : 0;
 
       const [tripRow] = await tx.$queryRaw<TripRow[]>`
         WITH pts AS (
@@ -286,6 +369,7 @@ export class TripRepository {
           "co2SavedGrams",
           "ecoPointsEarned",
           "rejectionReason",
+          "carpoolSessionId",
           "startedAt",
           "endedAt"
         )
@@ -302,6 +386,7 @@ export class TripRepository {
           ${co2SavedGrams}::float8,
           ${ecoPointsEarned}::int,
           ${rejectionReason},
+          ${linkedCarpoolSessionId},
           ${startedAt},
           ${endedAt}
         FROM line
@@ -318,6 +403,7 @@ export class TripRepository {
           "co2SavedGrams",
           "ecoPointsEarned",
           "rejectionReason",
+          "carpoolSessionId",
           "startedAt",
           "endedAt",
           "createdAt"
@@ -334,9 +420,46 @@ export class TripRepository {
         });
         await tx.commuter.update({
           where: { id: commuterId },
-          data: {
-            ecoPointsBalance: { increment: ecoPointsEarned },
-          },
+          data: { ecoPointsBalance: { increment: ecoPointsEarned } },
+        });
+      }
+
+      // Upgrade any waiting peer Carpool trips to VALIDATED now that mutual arrival is confirmed
+      if (peerTripsToValidate.length > 0 && linkedCarpoolSessionId) {
+        for (const peerTrip of peerTripsToValidate) {
+          const peerCo2 =
+            Math.round((peerTrip.distanceMeters / 1000) * rule.co2GramsPerKm * 100) / 100;
+          const peerRawPts = Math.round((peerTrip.distanceMeters / 1000) * rule.pointsPerKm);
+          const peerEarned = await computeCappedTripPoints(tx, peerTrip.commuterId, peerRawPts);
+
+          await tx.trip.update({
+            where: { id: peerTrip.id },
+            data: {
+              status: "VALIDATED",
+              co2SavedGrams: peerCo2,
+              ecoPointsEarned: peerEarned,
+            },
+          });
+
+          if (peerEarned > 0) {
+            await tx.pointTransaction.create({
+              data: {
+                commuterId: peerTrip.commuterId,
+                amount: peerEarned,
+                reason: "TRIP_VALIDATED",
+                tripId: peerTrip.id,
+              },
+            });
+            await tx.commuter.update({
+              where: { id: peerTrip.commuterId },
+              data: { ecoPointsBalance: { increment: peerEarned } },
+            });
+          }
+        }
+
+        await tx.carpoolSession.update({
+          where: { id: linkedCarpoolSessionId },
+          data: { status: "COMPLETED" },
         });
       }
 
@@ -361,6 +484,7 @@ export class TripRepository {
         "co2SavedGrams",
         "ecoPointsEarned",
         "rejectionReason",
+        "carpoolSessionId",
         "startedAt",
         "endedAt",
         "createdAt"
@@ -369,6 +493,134 @@ export class TripRepository {
       ORDER BY "createdAt" DESC, id DESC
     `;
     return rows.map(toTripDto);
+  }
+
+  async listByStatus(status?: TripStatusDto): Promise<TripDto[]> {
+    const rows = status
+      ? await this.prisma.$queryRaw<TripRow[]>`
+          SELECT
+            id,
+            "commuterId",
+            "transportMode",
+            status,
+            ST_AsGeoJSON(route) AS route,
+            "distanceMeters",
+            "durationSeconds",
+            "avgSpeedKmh",
+            "peakSpeedKmh",
+            "co2SavedGrams",
+            "ecoPointsEarned",
+            "rejectionReason",
+            "carpoolSessionId",
+            "startedAt",
+            "endedAt",
+            "createdAt"
+          FROM "Trip"
+          WHERE status = ${status}::"TripStatus"
+          ORDER BY "createdAt" DESC, id DESC
+        `
+      : await this.prisma.$queryRaw<TripRow[]>`
+          SELECT
+            id,
+            "commuterId",
+            "transportMode",
+            status,
+            ST_AsGeoJSON(route) AS route,
+            "distanceMeters",
+            "durationSeconds",
+            "avgSpeedKmh",
+            "peakSpeedKmh",
+            "co2SavedGrams",
+            "ecoPointsEarned",
+            "rejectionReason",
+            "carpoolSessionId",
+            "startedAt",
+            "endedAt",
+            "createdAt"
+          FROM "Trip"
+          ORDER BY "createdAt" DESC, id DESC
+        `;
+    return rows.map(toTripDto);
+  }
+
+  async reviewTripStatus(
+    tripId: string,
+    targetStatus: "VALIDATED" | "REJECTED",
+    rejectionReason?: string,
+  ): Promise<TripDto> {
+    const updatedRow = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.trip.findUnique({ where: { id: tripId } });
+      if (!existing) {
+        throw new TripStateTransitionError(404, "Viagem não encontrada.");
+      }
+      if (existing.status !== "PENDING_REVIEW") {
+        throw new TripStateTransitionError(
+          400,
+          `Transição inválida: apenas viagens em PENDING_REVIEW podem ser revisadas (atual: ${existing.status}).`,
+        );
+      }
+
+      const rule = MODE_RULES[existing.transportMode];
+      let co2SavedGrams = 0;
+      let ecoPointsEarned = 0;
+      let finalRejectionReason: string | null = null;
+
+      if (targetStatus === "VALIDATED") {
+        co2SavedGrams =
+          Math.round((existing.distanceMeters / 1000) * rule.co2GramsPerKm * 100) / 100;
+        const rawPoints = Math.round((existing.distanceMeters / 1000) * rule.pointsPerKm);
+        ecoPointsEarned = await computeCappedTripPoints(tx, existing.commuterId, rawPoints);
+      } else {
+        finalRejectionReason =
+          rejectionReason ?? "MANAGER_REJECTED: Trajeto rejeitado na revisão do gestor.";
+      }
+
+      const [row] = await tx.$queryRaw<TripRow[]>`
+        UPDATE "Trip"
+        SET
+          status = ${targetStatus}::"TripStatus",
+          "co2SavedGrams" = ${co2SavedGrams}::float8,
+          "ecoPointsEarned" = ${ecoPointsEarned}::int,
+          "rejectionReason" = ${finalRejectionReason}
+        WHERE id = ${tripId}
+        RETURNING
+          id,
+          "commuterId",
+          "transportMode",
+          status,
+          ST_AsGeoJSON(route) AS route,
+          "distanceMeters",
+          "durationSeconds",
+          "avgSpeedKmh",
+          "peakSpeedKmh",
+          "co2SavedGrams",
+          "ecoPointsEarned",
+          "rejectionReason",
+          "carpoolSessionId",
+          "startedAt",
+          "endedAt",
+          "createdAt"
+      `;
+
+      if (targetStatus === "VALIDATED" && ecoPointsEarned > 0 && row) {
+        await tx.pointTransaction.create({
+          data: {
+            commuterId: existing.commuterId,
+            amount: ecoPointsEarned,
+            reason: "TRIP_VALIDATED",
+            tripId: row.id,
+          },
+        });
+        await tx.commuter.update({
+          where: { id: existing.commuterId },
+          data: { ecoPointsBalance: { increment: ecoPointsEarned } },
+        });
+      }
+
+      return row!;
+    });
+
+    return toTripDto(updatedRow);
   }
 
   async listLedgerByCommuter(commuterId: string): Promise<PointTransactionDto[]> {
@@ -383,6 +635,8 @@ export class TripRepository {
         amount: row.amount,
         reason: row.reason,
         tripId: row.tripId,
+        hazardReportId: row.hazardReportId,
+        redemptionId: row.redemptionId,
         createdAt: row.createdAt.toISOString(),
       }),
     );

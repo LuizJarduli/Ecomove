@@ -11,9 +11,15 @@ abstract class EcoMoveApiRepository {
     required String idToken,
     required TransportMode transportMode,
     required List<GpsCoordinate> coordinates,
+    String? carpoolSessionId,
   });
   Future<List<Trip>> fetchMyTrips(String idToken);
   Future<List<PointTransaction>> fetchMyLedger(String idToken);
+  Future<CarpoolSession> createCarpoolSession(String idToken);
+  Future<CarpoolSession> joinCarpoolSession({
+    required String idToken,
+    required String joinCode,
+  });
 }
 
 class HttpEcoMoveApiRepository implements EcoMoveApiRepository {
@@ -57,6 +63,7 @@ class HttpEcoMoveApiRepository implements EcoMoveApiRepository {
     required String idToken,
     required TransportMode transportMode,
     required List<GpsCoordinate> coordinates,
+    String? carpoolSessionId,
   }) async {
     final response = await _httpClient.post(
       Uri.parse('$baseUrl/v1/trips'),
@@ -67,12 +74,48 @@ class HttpEcoMoveApiRepository implements EcoMoveApiRepository {
       body: jsonEncode({
         'transportMode': transportMode.code,
         'coordinates': coordinates.map((point) => point.toJson()).toList(),
+        'carpoolSessionId': ?carpoolSessionId,
       }),
     );
     if (response.statusCode != 201) {
       throw Exception('Falha ao sincronizar trajeto com o servidor.');
     }
     return Trip.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  @override
+  Future<CarpoolSession> createCarpoolSession(String idToken) async {
+    final response = await _httpClient.post(
+      Uri.parse('$baseUrl/v1/carpool-sessions'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Falha ao criar sessão de carona.');
+    }
+    return CarpoolSession.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<CarpoolSession> joinCarpoolSession({
+    required String idToken,
+    required String joinCode,
+  }) async {
+    final response = await _httpClient.post(
+      Uri.parse('$baseUrl/v1/carpool-sessions/join'),
+      headers: {
+        'authorization': 'Bearer $idToken',
+        'content-type': 'application/json',
+      },
+      body: jsonEncode({'joinCode': joinCode}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Código de carona inválido ou sessão encerrada.');
+    }
+    return CarpoolSession.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override

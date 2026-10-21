@@ -8,16 +8,22 @@ datasource db {
 }
 
 model Commuter {
-  id                String             @id @default(uuid())
-  firebaseUid       String             @unique
-  email             String             @unique
-  name              String?
-  isInstitutional   Boolean            @default(false)
-  ecoPointsBalance  Int                @default(0)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  trips             Trip[]
-  pointTransactions PointTransaction[]
+  id                  String               @id @default(uuid())
+  firebaseUid         String               @unique
+  email               String               @unique
+  name                String?
+  isInstitutional     Boolean              @default(false)
+  ecoPointsBalance    Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  trips               Trip[]
+  pointTransactions   PointTransaction[]
+  drivenCarpools      CarpoolSession[]     @relation("CarpoolDriver")
+  carpoolParticipants CarpoolParticipant[]
+  hazardReports       HazardReport[]
+  hazardEndorsements  HazardEndorsement[]
+  redemptions         Redemption[]
+  mobilityInsights    MobilityInsight[]
 }
 
 model MobilityManager {
@@ -59,6 +65,55 @@ enum PointTransactionReason {
   REDEMPTION_EXPIRED_REFUND
 }
 
+enum CarpoolSessionStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+}
+
+enum HazardCategory {
+  SIDEWALK_DAMAGE
+  BIKE_LANE_OBSTRUCTION
+  POOR_LIGHTING
+  BUS_STOP_ISSUE
+  OTHER
+}
+
+enum HazardStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  RESOLVED
+}
+
+enum RedemptionStatus {
+  ACTIVE
+  USED
+  EXPIRED
+}
+
+model CarpoolSession {
+  id           String               @id @default(uuid())
+  driverId     String
+  driver       Commuter             @relation("CarpoolDriver", fields: [driverId], references: [id], onDelete: Cascade)
+  joinCode     String               @unique
+  status       CarpoolSessionStatus @default(OPEN)
+  createdAt    DateTime             @default(now())
+  participants CarpoolParticipant[]
+  trips        Trip[]
+}
+
+model CarpoolParticipant {
+  id         String         @id @default(uuid())
+  sessionId  String
+  session    CarpoolSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  commuterId String
+  commuter   Commuter       @relation(fields: [commuterId], references: [id], onDelete: Cascade)
+  joinedAt   DateTime       @default(now())
+
+  @@unique([sessionId, commuterId])
+}
+
 model Trip {
   id                String                                    @id @default(uuid())
   commuterId        String
@@ -73,24 +128,117 @@ model Trip {
   co2SavedGrams     Float                                     @default(0)
   ecoPointsEarned   Int                                       @default(0)
   rejectionReason   String?
+  carpoolSessionId  String?
+  carpoolSession    CarpoolSession?                           @relation(fields: [carpoolSessionId], references: [id], onDelete: SetNull)
   startedAt         DateTime
   endedAt           DateTime
   createdAt         DateTime                                  @default(now())
   pointTransactions PointTransaction[]
 
   @@index([commuterId, createdAt])
+  @@index([carpoolSessionId])
   @@index([route], type: Gist)
 }
 
+model HazardReport {
+  id                String                               @id @default(uuid())
+  reporterId        String
+  reporter          Commuter                             @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  category          HazardCategory
+  status            HazardStatus                         @default(PENDING)
+  description       String
+  photoUrl          String
+  location          Unsupported("geometry(Point, 4326)")
+  endorsementCount  Int                                  @default(1)
+  resolvedAt        DateTime?
+  createdAt         DateTime                             @default(now())
+  updatedAt         DateTime                             @updatedAt
+  endorsements      HazardEndorsement[]
+  pointTransactions PointTransaction[]
+
+  @@index([status, category])
+  @@index([location], type: Gist)
+}
+
+model HazardEndorsement {
+  id             String       @id @default(uuid())
+  hazardReportId String
+  hazardReport   HazardReport @relation(fields: [hazardReportId], references: [id], onDelete: Cascade)
+  commuterId     String
+  commuter       Commuter     @relation(fields: [commuterId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@unique([hazardReportId, commuterId])
+}
+
+model Partner {
+  id        String   @id @default(uuid())
+  name      String
+  category  String
+  address   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  rewards   Reward[]
+}
+
+model Reward {
+  id            String       @id @default(uuid())
+  partnerId     String
+  partner       Partner      @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  costEcoPoints Int
+  stock         Int
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  redemptions   Redemption[]
+}
+
+model Redemption {
+  id                String             @id @default(uuid())
+  commuterId        String
+  commuter          Commuter           @relation(fields: [commuterId], references: [id], onDelete: Cascade)
+  rewardId          String
+  reward            Reward             @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  voucherCode       String             @unique
+  costEcoPoints     Int
+  status            RedemptionStatus   @default(ACTIVE)
+  expiresAt         DateTime
+  usedAt            DateTime?
+  expiredAt         DateTime?
+  createdAt         DateTime           @default(now())
+  pointTransactions PointTransaction[]
+
+  @@index([commuterId, status])
+  @@index([status, expiresAt])
+}
+
 model PointTransaction {
-  id         String                 @id @default(uuid())
-  commuterId String
-  commuter   Commuter               @relation(fields: [commuterId], references: [id], onDelete: Cascade)
-  amount     Int
-  reason     PointTransactionReason
-  tripId     String?
-  trip       Trip?                  @relation(fields: [tripId], references: [id], onDelete: SetNull)
-  createdAt  DateTime               @default(now())
+  id             String                 @id @default(uuid())
+  commuterId     String
+  commuter       Commuter               @relation(fields: [commuterId], references: [id], onDelete: Cascade)
+  amount         Int
+  reason         PointTransactionReason
+  tripId         String?
+  trip           Trip?                  @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  hazardReportId String?
+  hazardReport   HazardReport?          @relation(fields: [hazardReportId], references: [id], onDelete: SetNull)
+  redemptionId   String?
+  redemption     Redemption?            @relation(fields: [redemptionId], references: [id], onDelete: SetNull)
+  createdAt      DateTime               @default(now())
 
   @@index([commuterId, createdAt])
+}
+
+model MobilityInsight {
+  id                 String    @id @default(uuid())
+  audience           String
+  provider           String
+  commuterId         String?
+  commuter           Commuter? @relation(fields: [commuterId], references: [id], onDelete: SetNull)
+  summary            String
+  priorityCorridors  Json?
+  recommendedActions Json?
+  createdAt          DateTime  @default(now())
 }

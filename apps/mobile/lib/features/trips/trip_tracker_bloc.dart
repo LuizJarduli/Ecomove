@@ -55,6 +55,28 @@ final class TripSummaryDismissed extends TripTrackerEvent {
   const TripSummaryDismissed();
 }
 
+final class TripCarpoolCreateRequested extends TripTrackerEvent {
+  final String idToken;
+
+  const TripCarpoolCreateRequested(this.idToken);
+
+  @override
+  List<Object?> get props => [idToken];
+}
+
+final class TripCarpoolJoinRequested extends TripTrackerEvent {
+  final String idToken;
+  final String joinCode;
+
+  const TripCarpoolJoinRequested({
+    required this.idToken,
+    required this.joinCode,
+  });
+
+  @override
+  List<Object?> get props => [idToken, joinCode];
+}
+
 class TripTrackerState extends Equatable {
   final TransportMode selectedMode;
   final bool isRecording;
@@ -63,6 +85,7 @@ class TripTrackerState extends Equatable {
   final List<Trip> tripHistory;
   final List<PointTransaction> ledgerEntries;
   final Trip? lastCompletedTrip;
+  final CarpoolSession? activeCarpoolSession;
   final String? errorMessage;
 
   const TripTrackerState({
@@ -73,6 +96,7 @@ class TripTrackerState extends Equatable {
     this.tripHistory = const [],
     this.ledgerEntries = const [],
     this.lastCompletedTrip,
+    this.activeCarpoolSession,
     this.errorMessage,
   });
 
@@ -85,6 +109,8 @@ class TripTrackerState extends Equatable {
     List<PointTransaction>? ledgerEntries,
     Trip? lastCompletedTrip,
     bool clearLastCompletedTrip = false,
+    CarpoolSession? activeCarpoolSession,
+    bool clearCarpoolSession = false,
     String? errorMessage,
     bool clearErrorMessage = false,
   }) {
@@ -97,6 +123,8 @@ class TripTrackerState extends Equatable {
       ledgerEntries: ledgerEntries ?? this.ledgerEntries,
       lastCompletedTrip:
           clearLastCompletedTrip ? null : (lastCompletedTrip ?? this.lastCompletedTrip),
+      activeCarpoolSession:
+          clearCarpoolSession ? null : (activeCarpoolSession ?? this.activeCarpoolSession),
       errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
     );
   }
@@ -110,6 +138,7 @@ class TripTrackerState extends Equatable {
         tripHistory,
         ledgerEntries,
         lastCompletedTrip,
+        activeCarpoolSession,
         errorMessage,
       ];
 }
@@ -128,6 +157,8 @@ class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
     on<TripGpsCoordinateRecorded>(_onGpsCoordinateRecorded);
     on<TripRecordingCompleted>(_onRecordingCompleted);
     on<TripSummaryDismissed>(_onSummaryDismissed);
+    on<TripCarpoolCreateRequested>(_onCarpoolCreateRequested);
+    on<TripCarpoolJoinRequested>(_onCarpoolJoinRequested);
   }
 
   Future<void> _onHistoryLoadRequested(
@@ -208,6 +239,7 @@ class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
         idToken: event.idToken,
         transportMode: state.selectedMode,
         coordinates: buffered,
+        carpoolSessionId: state.activeCarpoolSession?.id,
       );
       await locationQueueService.clearQueue();
       final trips = await apiRepository.fetchMyTrips(event.idToken);
@@ -240,5 +272,50 @@ class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
     Emitter<TripTrackerState> emit,
   ) {
     emit(state.copyWith(clearLastCompletedTrip: true));
+  }
+
+  Future<void> _onCarpoolCreateRequested(
+    TripCarpoolCreateRequested event,
+    Emitter<TripTrackerState> emit,
+  ) async {
+    try {
+      final session = await apiRepository.createCarpoolSession(event.idToken);
+      emit(
+        state.copyWith(
+          activeCarpoolSession: session,
+          clearErrorMessage: true,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: error.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onCarpoolJoinRequested(
+    TripCarpoolJoinRequested event,
+    Emitter<TripTrackerState> emit,
+  ) async {
+    try {
+      final session = await apiRepository.joinCarpoolSession(
+        idToken: event.idToken,
+        joinCode: event.joinCode,
+      );
+      emit(
+        state.copyWith(
+          activeCarpoolSession: session,
+          clearErrorMessage: true,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: error.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
   }
 }
