@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Commuter {
+  id                String   @id @default(uuid())
+  firebaseUid       String   @unique
+  email             String   @unique
+  name              String?
+  isInstitutional   Boolean  @default(false)
+  ecoPointsBalance  Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model MobilityManager {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  firebaseUid String?  @unique
+  name        String?
+  department  String?
+  createdAt   DateTime @default(now())
+}
+
+model CampusZone {
+  id       String                                   @id @default(uuid())
+  name     String
+  boundary Unsupported("geometry(Polygon, 4326)")
+  isActive Boolean                                  @default(true)
+
+  @@index([boundary], type: Gist)
+}

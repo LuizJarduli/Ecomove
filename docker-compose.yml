@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: ecomove-db
+    environment:
+      POSTGRES_USER: ecomove
+      POSTGRES_PASSWORD: ecomove
+      POSTGRES_DB: ecomove
+    ports:
+      - "5432:5432"
+    volumes:
+      - ecomove-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecomove -d ecomove"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  ecomove-pgdata:
