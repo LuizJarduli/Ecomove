@@ -23,30 +23,36 @@ export function LoginForm() {
 
   return (
     <form action={submit} className="space-y-4">
-      <label className="block text-sm font-medium">
-        E-mail
-        <input name="email" type="email" required className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" />
+      <label className="block text-sm font-medium text-[#111111]">
+        E-mail Institucional
+        <input
+          name="email"
+          type="email"
+          placeholder="gestor@facens.br"
+          required
+          className="mt-1.5 w-full rounded-lg border border-[#E7E7E4] bg-[#F7F7F5] px-3.5 py-2.5 text-sm text-[#111111] transition-shadow outline-none focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20"
+        />
       </label>
-      <label className="block text-sm font-medium">
+      <label className="block text-sm font-medium text-[#111111]">
         Senha
         <input
           name="password"
           type="password"
           required
-          className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2"
+          className="mt-1.5 w-full rounded-lg border border-[#E7E7E4] bg-[#F7F7F5] px-3.5 py-2.5 text-sm text-[#111111] transition-shadow outline-none focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20"
         />
       </label>
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="rounded-lg border border-[#BA1A1A]/30 bg-[#FFDAD6]/40 px-3 py-2 text-sm text-[#93000A]">
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-md bg-green-600 py-2 font-medium text-white disabled:opacity-60"
+        className="w-full rounded-full bg-[#111111] py-3 text-sm font-medium text-white transition-all hover:opacity-90 disabled:opacity-60"
       >
-        {pending ? "Entrando…" : "Entrar"}
+        {pending ? "Verificando credenciais…" : "Entrar no Painel"}
       </button>
     </form>
   );

@@ -2,7 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const SESSION_COOKIE = "ecomove_session";
 
-/** Optimistic check only: real authorization happens in the data access layer on the server. */
+/**
+ * Optimistic check for protected `/painel` routes only.
+ * The public landing page (`/`) and `/login` remain accessible to everyone;
+ * full role verification runs in the server Data Access Layer (`src/lib/dal.ts`).
+ */
 export function proxy(request: NextRequest) {
   if (!request.cookies.has(SESSION_COOKIE)) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -11,5 +15,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!login|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/painel/:path*"],
 };

@@ -18,7 +18,7 @@ export async function startSession(idToken: string): Promise<StartSessionResult>
           : "Não foi possível iniciar a sessão.",
     };
   }
-  redirect("/");
+  redirect("/painel");
 }
 
 export async function logout() {
