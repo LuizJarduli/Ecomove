@@ -413,7 +413,7 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
               <img
                 src="/stitch/bi-dashboard.png"
                 alt="EcoMove — Painel de Business Intelligence e Mapa Geoespacial PostGIS"
-                className="max-h-[520px] w-full object-cover object-top"
+                className="w-full h-auto object-contain object-top"
               />
             </div>
 
@@ -515,8 +515,8 @@ export function LandingShowcase({ isAuthenticatedManager }: { isAuthenticatedMan
                       alt={item.title}
                       className={
                         item.aspect === "mobile"
-                          ? "max-h-[500px] w-auto rounded-[24px] border border-[#E7E7E4] shadow-lg"
-                          : "max-h-[500px] w-full rounded-2xl border border-[#E7E7E4] object-cover object-top shadow-md"
+                          ? "max-h-[540px] w-auto rounded-[24px] border border-[#E7E7E4] object-contain shadow-lg"
+                          : "max-h-[540px] w-full rounded-2xl border border-[#E7E7E4] bg-[#FCFCFB] object-contain object-top shadow-md"
                       }
                     />
                   </div>
