@@ -5,6 +5,9 @@
     "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma", "esbuild"]
   },
   "scripts": {
+    "dev": "pnpm --filter @ecomove/web dev",
+    "web:dev": "pnpm --filter @ecomove/web dev",
+    "web:build": "pnpm --filter @ecomove/web build",
     "db:up": "docker compose up -d --wait db",
     "api:test": "pnpm --filter @ecomove/api test",
     "api:dev": "pnpm --filter @ecomove/api dev"
