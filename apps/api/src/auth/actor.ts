@@ -76,6 +76,16 @@ export async function resolveActor(
     },
     update: {},
   });
+  const [totals] = await prisma.$queryRaw<
+    Array<{ totalDistanceMeters: number; totalCo2SavedGrams: number }>
+  >`
+    SELECT
+      COALESCE(SUM("distanceMeters"), 0)::float8 AS "totalDistanceMeters",
+      COALESCE(SUM("co2SavedGrams"), 0)::float8 AS "totalCo2SavedGrams"
+    FROM "Trip"
+    WHERE "commuterId" = ${commuter.id} AND status = 'VALIDATED'::"TripStatus"
+  `;
+
   return {
     role: Role.Commuter,
     id: commuter.id,
@@ -83,9 +93,8 @@ export async function resolveActor(
     name: commuter.name,
     isInstitutional: commuter.isInstitutional,
     ecoPointsBalance: commuter.ecoPointsBalance,
-    // Derived from validated Trips once Trip recording lands (ticket #3).
-    totalDistanceMeters: 0,
-    totalCo2SavedGrams: 0,
+    totalDistanceMeters: Math.round((totals?.totalDistanceMeters ?? 0) * 100) / 100,
+    totalCo2SavedGrams: Math.round((totals?.totalCo2SavedGrams ?? 0) * 100) / 100,
   };
 }
 

@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Commuter {
-  id                String   @id @default(uuid())
-  firebaseUid       String   @unique
-  email             String   @unique
+  id                String             @id @default(uuid())
+  firebaseUid       String             @unique
+  email             String             @unique
   name              String?
-  isInstitutional   Boolean  @default(false)
-  ecoPointsBalance  Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  isInstitutional   Boolean            @default(false)
+  ecoPointsBalance  Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  trips             Trip[]
+  pointTransactions PointTransaction[]
 }
 
 model MobilityManager {
@@ -34,4 +36,61 @@ model CampusZone {
   isActive Boolean                                  @default(true)
 
   @@index([boundary], type: Gist)
+}
+
+enum TransportMode {
+  WALK
+  BICYCLE
+  PUBLIC_TRANSIT
+  CARPOOL
+}
+
+enum TripStatus {
+  RECORDING
+  VALIDATED
+  PENDING_REVIEW
+  REJECTED
+}
+
+enum PointTransactionReason {
+  TRIP_VALIDATED
+  HAZARD_APPROVED
+  REWARD_REDEEMED
+  REDEMPTION_EXPIRED_REFUND
+}
+
+model Trip {
+  id                String                                    @id @default(uuid())
+  commuterId        String
+  commuter          Commuter                                  @relation(fields: [commuterId], references: [id], onDelete: Cascade)
+  transportMode     TransportMode
+  status            TripStatus
+  route             Unsupported("geometry(LineString, 4326)")
+  distanceMeters    Float
+  durationSeconds   Int
+  avgSpeedKmh       Float
+  peakSpeedKmh      Float
+  co2SavedGrams     Float                                     @default(0)
+  ecoPointsEarned   Int                                       @default(0)
+  rejectionReason   String?
+  startedAt         DateTime
+  endedAt           DateTime
+  createdAt         DateTime                                  @default(now())
+  pointTransactions PointTransaction[]
+
+  @@index([commuterId, createdAt])
+  @@index([route], type: Gist)
+}
+
+model PointTransaction {
+  id         String                 @id @default(uuid())
+  commuterId String
+  commuter   Commuter               @relation(fields: [commuterId], references: [id], onDelete: Cascade)
+  amount     Int
+  reason     PointTransactionReason
+  tripId     String?
+  trip       Trip?                  @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  createdAt  DateTime               @default(now())
+
+  @@index([commuterId, createdAt])
 }

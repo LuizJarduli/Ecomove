@@ -16,12 +16,15 @@ dependencies:
   latlong2: ^0.9.1
   http: ^1.2.2
   equatable: ^2.0.5
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
   bloc_test: ^9.1.7
+  sqflite_common_ffi: ^2.3.3
 
 flutter:
   uses-material-design: true

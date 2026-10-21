@@ -29,6 +29,10 @@ final class CommuterSignOutRequested extends CommuterSessionEvent {
   const CommuterSignOutRequested();
 }
 
+final class CommuterProfileRefreshRequested extends CommuterSessionEvent {
+  const CommuterProfileRefreshRequested();
+}
+
 sealed class CommuterSessionState extends Equatable {
   const CommuterSessionState();
 
@@ -75,6 +79,7 @@ class CommuterSessionBloc
   }) : super(const CommuterUnauthenticated()) {
     on<CommuterSignInRequested>(_onSignInRequested);
     on<CommuterSignOutRequested>(_onSignOutRequested);
+    on<CommuterProfileRefreshRequested>(_onProfileRefreshRequested);
   }
 
   Future<void> _onSignInRequested(
@@ -111,5 +116,25 @@ class CommuterSessionBloc
   ) async {
     await authGateway.signOut();
     emit(const CommuterUnauthenticated());
+  }
+
+  Future<void> _onProfileRefreshRequested(
+    CommuterProfileRefreshRequested event,
+    Emitter<CommuterSessionState> emit,
+  ) async {
+    final current = state;
+    if (current is! CommuterAuthenticated) return;
+    try {
+      final refreshed = await apiRepository.fetchMe(current.idToken);
+      emit(
+        CommuterAuthenticated(
+          idToken: current.idToken,
+          commuter: refreshed,
+          campusZone: current.campusZone,
+        ),
+      );
+    } catch (_) {
+      // Keep current cached commuter profile if offline.
+    }
   }
 }

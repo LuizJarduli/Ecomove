@@ -7,6 +7,8 @@ import { registerSessionRoutes } from "./routes/session.js";
 import { registerMeRoutes } from "./routes/me.js";
 import { CampusZoneRepository } from "./campus-zones/campus-zone-repository.js";
 import { registerCampusZoneRoutes } from "./routes/campus-zones.js";
+import { TripRepository } from "./trips/trip-repository.js";
+import { registerTripRoutes } from "./routes/trips.js";
 
 declare module "fastify" {
   interface FastifyContextConfig {
@@ -29,6 +31,7 @@ export async function buildApp(deps: AppDependencies): Promise<FastifyInstance> 
   registerSessionRoutes(app, deps.authVerifier);
   registerMeRoutes(app);
   registerCampusZoneRoutes(app, new CampusZoneRepository(deps.prisma));
+  registerTripRoutes(app, new TripRepository(deps.prisma));
   await app.ready();
   return app;
 }

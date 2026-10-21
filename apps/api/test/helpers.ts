@@ -15,7 +15,7 @@ export interface TestContext {
 export async function createTestContext(): Promise<TestContext> {
   const prisma = new PrismaClient({ datasources: { db: { url: TEST_DATABASE_URL } } });
   await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "Commuter", "MobilityManager", "CampusZone" RESTART IDENTITY CASCADE',
+    'TRUNCATE TABLE "PointTransaction", "Trip", "Commuter", "MobilityManager", "CampusZone" RESTART IDENTITY CASCADE',
   );
   const verifier = new FakeAuthVerifier();
   const app = await buildApp({ prisma, authVerifier: verifier });
