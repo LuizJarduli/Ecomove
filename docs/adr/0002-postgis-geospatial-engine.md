@@ -1,0 +1,3 @@
+# PostgreSQL with PostGIS for Geospatial Storage and Validation
+
+We decided to use PostgreSQL with the PostGIS spatial extension as our primary database rather than a standard relational or NoSQL store with application-level Haversine math. EcoMove requires polygon containment checks against the `CampusZone` (`ST_Intersects`), route distance computation over `LineString` geometries (`ST_Length`), spatial deduplication of `HazardReport` pins within 30 meters (`ST_DWithin`), and heatmap aggregation for the `MobilityManager` BI dashboard, all of which PostGIS executes natively with spatial GiST indexes.

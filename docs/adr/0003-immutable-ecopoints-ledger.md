@@ -1,0 +1,3 @@
+# Immutable Ledger for EcoPoints Balance and Redemptions
+
+We decided to model the `Commuter`'s `EcoPoints` wallet as an append-only ledger of `PointTransaction` rows (with a cached balance on the `Commuter` record updated within the same database transaction) rather than mutating a single integer counter in place. Because `Trip`s in `PENDING_REVIEW` and `HazardReport`s in `PENDING` are credited asynchronously upon `MobilityManager` review, and `Redemption` vouchers automatically refund points if they expire unused after 7 days, an immutable ledger guarantees full auditability and prevents double-crediting or lost refunds.

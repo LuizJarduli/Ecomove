@@ -1,0 +1,3 @@
+# Firebase Spark Plan Authentication and Zero-Billing Media Storage
+
+We decided to use Firebase Authentication (Spark free plan) as the identity provider across both the Flutter mobile app (`apps/mobile`) and the Next.js manager portal (`apps/web`), with the Fastify backend (`apps/api`) verifying Firebase ID tokens via `firebase-admin` and synchronizing actor roles (`Commuter` vs. `MobilityManager`) and institutional affiliation (`@facens.br`) in PostgreSQL. For `HazardReport` photo evidence, we apply client-side WebP compression (<300 KB) behind a `MediaStorageService` abstraction so the team can run with zero credit-card requirements on the Spark plan (using local disk / Supabase Storage free bucket or Firebase Storage if eligible).

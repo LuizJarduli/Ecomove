@@ -1,0 +1,3 @@
+# Pluggable AI Insight Facade for Cloud (Gemini) and Local/On-Device (Ollama) Models
+
+We decided to abstract all AI generation (`MobilityInsight` diagnostics for `MobilityManager`s and personalized sustainability nudges for `Commuter`s) behind a provider-agnostic `InsightEngine` facade on both the backend (`apps/api`) and the Flutter mobile app (`apps/mobile`). The initial implementation uses the Gemini API with structured JSON outputs for immediate reliability, while allowing seamless runtime switching to local Ollama models on the backend or on-device small language models on mobile phones without altering domain or UI logic.
