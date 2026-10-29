@@ -120,6 +120,10 @@ app.*.symbols
 
 .agents/
 node_modules/
-# Node / API
+# Node / API / Next.js
 node_modules/
 .env
+.next/
+out/
+.vercel/
+.firebase/

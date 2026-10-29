@@ -8,6 +8,8 @@
     "dev": "pnpm --filter @ecomove/web dev",
     "web:dev": "pnpm --filter @ecomove/web dev",
     "web:build": "pnpm --filter @ecomove/web build",
+    "landing:dev": "pnpm --filter @ecomove/landing dev",
+    "landing:build": "pnpm --filter @ecomove/landing build",
     "db:up": "docker compose up -d --wait db",
     "api:test": "pnpm --filter @ecomove/api test",
     "api:dev": "pnpm --filter @ecomove/api dev"

@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --surface: #f7f7f5;
+  --surface-panel: #f3f2ef;
+  --surface-card: #fcfcfb;
+  --surface-lowest: #ffffff;
+  --surface-variant: #e5e2e1;
+  --border-auralis: #e7e7e4;
+  --text-primary: #111111;
+  --text-secondary: #6b6b6b;
+  --accent-eco: #10b981;
+  --accent-indigo: #6366f1;
+}
+
+@theme inline {
+  --color-background: var(--surface);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--surface);
+  --color-panel: var(--surface-panel);
+  --color-card: var(--surface-card);
+  --color-border-subtle: var(--border-auralis);
+  --color-muted: var(--text-secondary);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.label-caps {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
