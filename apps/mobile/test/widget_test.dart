@@ -28,11 +28,24 @@ class FakeCommuterAuthGateway implements CommuterAuthGateway {
 }
 
 class FakeEcoMoveApiRepository implements EcoMoveApiRepository {
-  int _balance = 0;
+  int _balance = 30;
   double _distance = 0;
   double _co2 = 0;
   final List<Trip> _trips = [];
   final List<PointTransaction> _ledger = [];
+  final List<HazardReport> _hazards = [];
+  final List<Reward> _rewards = [
+    const Reward(
+      id: 'reward-1',
+      partnerName: 'Cantina FACENS',
+      partnerCategory: 'Alimentação',
+      title: 'Café Expresso Sustentável',
+      description: 'Combo matinal na Cantina do Bloco A',
+      costEcoPoints: 20,
+      stock: 5,
+    ),
+  ];
+  final List<Redemption> _redemptions = [];
 
   @override
   Future<Commuter> fetchMe(String idToken) async {
@@ -139,6 +152,86 @@ class FakeEcoMoveApiRepository implements EcoMoveApiRepository {
       participantCount: 2,
     );
   }
+
+  @override
+  Future<List<HazardReport>> fetchHazards(String idToken) async =>
+      List.of(_hazards);
+
+  @override
+  Future<HazardReport> submitHazardReport({
+    required String idToken,
+    required HazardCategory category,
+    required String description,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final report = HazardReport(
+      id: 'hazard-${_hazards.length + 1}',
+      category: category,
+      description: description,
+      status: 'PENDING',
+      endorsementCount: 1,
+      location: LatLng(latitude, longitude),
+    );
+    _hazards.insert(0, report);
+    return report;
+  }
+
+  @override
+  Future<HazardReport> endorseHazardReport({
+    required String idToken,
+    required String hazardId,
+  }) async {
+    final idx = _hazards.indexWhere((h) => h.id == hazardId);
+    final old = _hazards[idx];
+    final updated = HazardReport(
+      id: old.id,
+      category: old.category,
+      description: old.description,
+      status: old.status,
+      endorsementCount: old.endorsementCount + 1,
+      location: old.location,
+    );
+    _hazards[idx] = updated;
+    return updated;
+  }
+
+  @override
+  Future<List<Reward>> fetchRewards(String idToken) async => List.of(_rewards);
+
+  @override
+  Future<Redemption> redeemReward({
+    required String idToken,
+    required String rewardId,
+  }) async {
+    final rIdx = _rewards.indexWhere((r) => r.id == rewardId);
+    final reward = _rewards[rIdx];
+    _balance -= reward.costEcoPoints;
+    final redemption = Redemption(
+      id: 'redemption-${_redemptions.length + 1}',
+      rewardTitle: reward.title,
+      partnerName: reward.partnerName,
+      voucherCode: 'FACENS99',
+      costEcoPoints: reward.costEcoPoints,
+      status: 'ACTIVE',
+    );
+    _redemptions.insert(0, redemption);
+    return redemption;
+  }
+
+  @override
+  Future<List<Redemption>> fetchMyRedemptions(String idToken) async =>
+      List.of(_redemptions);
+
+  @override
+  Future<MobilityInsight> fetchCommuterNudge(String idToken) async {
+    return const MobilityInsight(
+      id: 'insight-1',
+      provider: 'DETERMINISTIC',
+      summary:
+          'Dica IA: Você já tem EcoPoints para resgatar Café Expresso Sustentável!',
+    );
+  }
 }
 
 void main() {
@@ -203,8 +296,9 @@ void main() {
 
       expect(find.textContaining('beatriz@facens.br'), findsOneWidget);
       expect(find.text('Comunidade FACENS (@facens.br)'), findsOneWidget);
-      expect(find.text('0 pts'), findsOneWidget);
+      expect(find.text('30 pts'), findsOneWidget);
       expect(find.text('Campus FACENS'), findsOneWidget);
+      expect(find.byKey(const Key('ai_nudge_banner')), findsOneWidget);
 
       expect(find.byType(FlutterMap), findsOneWidget);
       final polygonLayer =
@@ -263,7 +357,44 @@ void main() {
       expect(await queue.getBufferedPoints(), isEmpty);
       expect(find.byKey(const Key('trip_summary_card')), findsOneWidget);
       expect(find.text('Viagem Validada · +8 EcoPoints'), findsOneWidget);
-      expect(find.text('8 pts'), findsOneWidget);
+      expect(find.text('38 pts'), findsOneWidget);
+
+      // Navigate to Zeladoria tab, submit HazardReport & endorse within 30m
+      await tester.tap(find.byKey(const Key('nav_hazards_tab')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('hazard_description_input')),
+        'Buraco na ciclovia do Bloco E',
+      );
+      await tester.tap(find.byKey(const Key('submit_hazard_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Buraco na ciclovia do Bloco E'), findsOneWidget);
+      expect(
+        find.text('Ciclovia Obstruída · 1 confirmações'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(const Key('endorse_hazard_hazard-1')));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Ciclovia Obstruída · 2 confirmações'),
+        findsOneWidget,
+      );
+
+      // Navigate to Recompensas tab & redeem voucher
+      await tester.tap(find.byKey(const Key('nav_rewards_tab')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Cantina FACENS · Café Expresso Sustentável'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('redeem_reward_reward-1')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Voucher: FACENS99'), findsOneWidget);
 
       // Navigate to Histórico & Extrato tab
       await tester.tap(find.byKey(const Key('nav_history_tab')));

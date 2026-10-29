@@ -11,6 +11,14 @@ import { TripRepository } from "./trips/trip-repository.js";
 import { registerTripRoutes } from "./routes/trips.js";
 import { CarpoolRepository } from "./carpool/carpool-repository.js";
 import { registerCarpoolRoutes } from "./routes/carpool-sessions.js";
+import { HazardRepository } from "./hazards/hazard-repository.js";
+import { LocalSparkMediaStorageService } from "./hazards/media-storage.js";
+import { registerHazardRoutes } from "./routes/hazards.js";
+import { RewardRepository } from "./rewards/reward-repository.js";
+import { registerRewardRoutes } from "./routes/rewards.js";
+import { AnalyticsRepository } from "./analytics/analytics-repository.js";
+import { registerAnalyticsAndInsightRoutes } from "./routes/analytics-and-insights.js";
+import type { InsightEngine } from "./insights/insight-engine.js";
 
 declare module "fastify" {
   interface FastifyContextConfig {
@@ -24,6 +32,7 @@ export interface AppDependencies {
   authVerifier: AuthVerifier;
   /** Browser origins allowed to call the API directly (e.g. mobile web); CORS stays off when unset. */
   corsOrigins?: string[];
+  insightEngine?: InsightEngine;
 }
 
 export async function buildApp(deps: AppDependencies): Promise<FastifyInstance> {
@@ -35,6 +44,17 @@ export async function buildApp(deps: AppDependencies): Promise<FastifyInstance> 
   registerCampusZoneRoutes(app, new CampusZoneRepository(deps.prisma));
   registerTripRoutes(app, new TripRepository(deps.prisma));
   registerCarpoolRoutes(app, new CarpoolRepository(deps.prisma));
+  registerHazardRoutes(
+    app,
+    new HazardRepository(deps.prisma, new LocalSparkMediaStorageService()),
+  );
+  registerRewardRoutes(app, new RewardRepository(deps.prisma));
+  registerAnalyticsAndInsightRoutes(
+    app,
+    deps.prisma,
+    new AnalyticsRepository(deps.prisma),
+    deps.insightEngine,
+  );
   await app.ready();
   return app;
 }

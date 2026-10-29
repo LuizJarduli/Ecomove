@@ -1,5 +1,15 @@
-import { CampusZoneMapLoader } from "@/components/campus-zone-map-loader";
-import { ApiError, fetchActiveCampusZone, type CampusZone } from "@/lib/api";
+import { ManagerDashboard } from "@/components/manager-dashboard";
+import {
+  ApiError,
+  fetchActiveCampusZone,
+  fetchAnalyticsOverview,
+  fetchHazardReports,
+  fetchManagerInsights,
+  fetchPendingReviewTrips,
+  fetchRewardsCatalog,
+  fetchSpatialHeatmap,
+  type CampusZone,
+} from "@/lib/api";
 import { requireSession } from "@/lib/dal";
 
 async function loadActiveZone(token: string): Promise<CampusZone | null> {
@@ -11,39 +21,38 @@ async function loadActiveZone(token: string): Promise<CampusZone | null> {
   }
 }
 
-export default async function CampusZonePage() {
+export default async function PainelPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ institutionalOnly?: string }>;
+}) {
   const session = await requireSession();
   if (session.status !== "manager") return null;
 
-  const zone = await loadActiveZone(session.token);
-  if (!zone) {
-    return (
-      <div className="rounded-[24px] border border-[#E7E7E4] bg-[#FCFCFB] p-8 text-[#6B6B6B]">
-        Nenhuma zona de campus ativa cadastrada no PostGIS.
-      </div>
-    );
-  }
+  const params = await searchParams;
+  const institutionalOnly = params.institutionalOnly === "true";
+
+  const [zone, overview, heatmap, hazardsRes, pendingTripsRes, rewardsRes, insightsRes] =
+    await Promise.all([
+      loadActiveZone(session.token),
+      fetchAnalyticsOverview(session.token, institutionalOnly),
+      fetchSpatialHeatmap(session.token, institutionalOnly),
+      fetchHazardReports(session.token),
+      fetchPendingReviewTrips(session.token),
+      fetchRewardsCatalog(session.token),
+      fetchManagerInsights(session.token),
+    ]);
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#E7E7E4] pb-6">
-        <div>
-          <span className="label-caps text-emerald-800">Geofence Ativo · PostGIS SRID 4326</span>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">{zone.name}</h1>
-          <p className="mt-1 text-sm text-[#6B6B6B]">
-            Perímetro oficial utilizado pelo motor espacial (<code className="font-mono text-xs">ST_Intersects</code>)
-            para validação de deslocamentos sustentáveis e ocorrências de zeladoria.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 rounded-full border border-[#E7E7E4] bg-[#FCFCFB] px-4 py-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          <span className="label-caps text-[#111111]">Status: Ativa</span>
-        </div>
-      </div>
-
-      <div className="rounded-[24px] border border-[#E7E7E4] bg-[#FCFCFB] p-4">
-        <CampusZoneMapLoader zone={zone} />
-      </div>
-    </section>
+    <ManagerDashboard
+      zone={zone}
+      overview={overview}
+      heatmap={heatmap}
+      hazards={hazardsRes.hazards}
+      pendingTrips={pendingTripsRes.trips}
+      rewards={rewardsRes.rewards}
+      insights={insightsRes.insights}
+      institutionalOnly={institutionalOnly}
+    />
   );
 }

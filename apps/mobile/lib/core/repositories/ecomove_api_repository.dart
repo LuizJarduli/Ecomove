@@ -20,6 +20,25 @@ abstract class EcoMoveApiRepository {
     required String idToken,
     required String joinCode,
   });
+  Future<List<HazardReport>> fetchHazards(String idToken);
+  Future<HazardReport> submitHazardReport({
+    required String idToken,
+    required HazardCategory category,
+    required String description,
+    required double latitude,
+    required double longitude,
+  });
+  Future<HazardReport> endorseHazardReport({
+    required String idToken,
+    required String hazardId,
+  });
+  Future<List<Reward>> fetchRewards(String idToken);
+  Future<Redemption> redeemReward({
+    required String idToken,
+    required String rewardId,
+  });
+  Future<List<Redemption>> fetchMyRedemptions(String idToken);
+  Future<MobilityInsight> fetchCommuterNudge(String idToken);
 }
 
 class HttpEcoMoveApiRepository implements EcoMoveApiRepository {
@@ -148,5 +167,130 @@ class HttpEcoMoveApiRepository implements EcoMoveApiRepository {
     return rawTransactions
         .map((item) => PointTransaction.fromJson(item as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<List<HazardReport>> fetchHazards(String idToken) async {
+    final response = await _httpClient.get(
+      Uri.parse('$baseUrl/v1/hazards'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao carregar ocorrências de zeladoria.');
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final raw = data['hazards'] as List<dynamic>;
+    return raw
+        .map((item) => HazardReport.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<HazardReport> submitHazardReport({
+    required String idToken,
+    required HazardCategory category,
+    required String description,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final response = await _httpClient.post(
+      Uri.parse('$baseUrl/v1/hazards'),
+      headers: {
+        'authorization': 'Bearer $idToken',
+        'content-type': 'application/json',
+      },
+      body: jsonEncode({
+        'category': category.code,
+        'description': description,
+        'latitude': latitude,
+        'longitude': longitude,
+      }),
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Ocorrência próxima encontrada num raio de 30m.');
+    }
+    return HazardReport.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<HazardReport> endorseHazardReport({
+    required String idToken,
+    required String hazardId,
+  }) async {
+    final response = await _httpClient.post(
+      Uri.parse('$baseUrl/v1/hazards/$hazardId/endorse'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Você já endossou esta ocorrência.');
+    }
+    return HazardReport.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<List<Reward>> fetchRewards(String idToken) async {
+    final response = await _httpClient.get(
+      Uri.parse('$baseUrl/v1/rewards'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao carregar catálogo de recompensas.');
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final raw = data['rewards'] as List<dynamic>;
+    return raw
+        .map((item) => Reward.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<Redemption> redeemReward({
+    required String idToken,
+    required String rewardId,
+  }) async {
+    final response = await _httpClient.post(
+      Uri.parse('$baseUrl/v1/rewards/$rewardId/redeem'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Saldo insuficiente ou recompensa esgotada.');
+    }
+    return Redemption.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<List<Redemption>> fetchMyRedemptions(String idToken) async {
+    final response = await _httpClient.get(
+      Uri.parse('$baseUrl/v1/redemptions/me'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao carregar vouchers resgatados.');
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final raw = data['redemptions'] as List<dynamic>;
+    return raw
+        .map((item) => Redemption.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<MobilityInsight> fetchCommuterNudge(String idToken) async {
+    final response = await _httpClient.get(
+      Uri.parse('$baseUrl/v1/commuters/me/nudge'),
+      headers: {'authorization': 'Bearer $idToken'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao obter recomendação inteligente.');
+    }
+    return MobilityInsight.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 }

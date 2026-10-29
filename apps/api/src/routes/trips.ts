@@ -6,6 +6,8 @@ import {
   InvalidTripTrajectoryError,
   pointTransactionDtoSchema,
   tripDtoSchema,
+  TripStateTransitionError,
+  tripStatusSchema,
   type TripRepository,
 } from "../trips/trip-repository.js";
 
@@ -15,6 +17,19 @@ const tripsListResponseSchema = z.object({
 
 const ledgerListResponseSchema = z.object({
   transactions: z.array(pointTransactionDtoSchema),
+});
+
+const managerTripsQuerySchema = z.object({
+  status: tripStatusSchema.optional(),
+});
+
+const tripIdParamsSchema = z.object({
+  id: z.string().min(1),
+});
+
+const managerReviewTripBodySchema = z.object({
+  status: z.enum(["VALIDATED", "REJECTED"]),
+  rejectionReason: z.string().optional(),
 });
 
 export function registerTripRoutes(app: FastifyInstance, repo: TripRepository) {
@@ -70,6 +85,50 @@ export function registerTripRoutes(app: FastifyInstance, repo: TripRepository) {
       }
       const transactions = await repo.listLedgerByCommuter(request.actor.id);
       return ledgerListResponseSchema.parse({ transactions });
+    },
+  );
+
+  app.get(
+    "/v1/manager/trips",
+    { config: { requiresAuth: true, requiresRole: Role.MobilityManager } },
+    async (request, reply) => {
+      const parsedQuery = managerTripsQuerySchema.safeParse(request.query);
+      if (!parsedQuery.success) {
+        return reply.code(400).send({ error: "INVALID_QUERY", message: "Filtro de status inválido." });
+      }
+      const trips = await repo.listByStatus(parsedQuery.data.status);
+      return tripsListResponseSchema.parse({ trips });
+    },
+  );
+
+  app.patch(
+    "/v1/manager/trips/:id/status",
+    { config: { requiresAuth: true, requiresRole: Role.MobilityManager } },
+    async (request, reply) => {
+      const parsedParams = tripIdParamsSchema.safeParse(request.params);
+      const parsedBody = managerReviewTripBodySchema.safeParse(request.body);
+      if (!parsedParams.success || !parsedBody.success) {
+        return reply.code(400).send({
+          error: "INVALID_BODY",
+          message: "Informe um status válido (VALIDATED ou REJECTED).",
+        });
+      }
+      try {
+        const updated = await repo.reviewTripStatus(
+          parsedParams.data.id,
+          parsedBody.data.status,
+          parsedBody.data.rejectionReason,
+        );
+        return reply.code(200).send(tripDtoSchema.parse(updated));
+      } catch (error) {
+        if (error instanceof TripStateTransitionError) {
+          return reply.code(error.statusCode).send({
+            error: "INVALID_TRIP_TRANSITION",
+            message: error.message,
+          });
+        }
+        throw error;
+      }
     },
   );
 }

@@ -231,3 +231,172 @@ class CarpoolSession extends Equatable {
   @override
   List<Object?> get props => [id, driverId, joinCode, status, participantCount];
 }
+
+enum HazardCategory {
+  sidewalkDamage('SIDEWALK_DAMAGE', 'Calçada Danificada'),
+  bikeLaneObstruction('BIKE_LANE_OBSTRUCTION', 'Ciclovia Obstruída'),
+  poorLighting('POOR_LIGHTING', 'Iluminação Precária'),
+  busStopIssue('BUS_STOP_ISSUE', 'Ponto de Ônibus'),
+  other('OTHER', 'Outros');
+
+  final String code;
+  final String labelPt;
+
+  const HazardCategory(this.code, this.labelPt);
+
+  static HazardCategory fromCode(String code) {
+    return HazardCategory.values.firstWhere(
+      (cat) => cat.code == code,
+      orElse: () => HazardCategory.other,
+    );
+  }
+}
+
+class HazardReport extends Equatable {
+  final String id;
+  final HazardCategory category;
+  final String description;
+  final String status;
+  final int endorsementCount;
+  final LatLng location;
+
+  const HazardReport({
+    required this.id,
+    required this.category,
+    required this.description,
+    required this.status,
+    required this.endorsementCount,
+    required this.location,
+  });
+
+  factory HazardReport.fromJson(Map<String, dynamic> json) {
+    final loc = json['location'] as Map<String, dynamic>;
+    final coords = loc['coordinates'] as List<dynamic>;
+    return HazardReport(
+      id: json['id'] as String,
+      category: HazardCategory.fromCode(json['category'] as String),
+      description: json['description'] as String,
+      status: json['status'] as String,
+      endorsementCount: (json['endorsementCount'] as num).toInt(),
+      location: LatLng(
+        (coords[1] as num).toDouble(),
+        (coords[0] as num).toDouble(),
+      ),
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        category,
+        description,
+        status,
+        endorsementCount,
+        location,
+      ];
+}
+
+class Reward extends Equatable {
+  final String id;
+  final String partnerName;
+  final String partnerCategory;
+  final String title;
+  final String description;
+  final int costEcoPoints;
+  final int stock;
+
+  const Reward({
+    required this.id,
+    required this.partnerName,
+    required this.partnerCategory,
+    required this.title,
+    required this.description,
+    required this.costEcoPoints,
+    required this.stock,
+  });
+
+  factory Reward.fromJson(Map<String, dynamic> json) {
+    return Reward(
+      id: json['id'] as String,
+      partnerName: json['partnerName'] as String,
+      partnerCategory: json['partnerCategory'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      costEcoPoints: (json['costEcoPoints'] as num).toInt(),
+      stock: (json['stock'] as num).toInt(),
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        partnerName,
+        partnerCategory,
+        title,
+        description,
+        costEcoPoints,
+        stock,
+      ];
+}
+
+class Redemption extends Equatable {
+  final String id;
+  final String rewardTitle;
+  final String partnerName;
+  final String voucherCode;
+  final int costEcoPoints;
+  final String status;
+
+  const Redemption({
+    required this.id,
+    required this.rewardTitle,
+    required this.partnerName,
+    required this.voucherCode,
+    required this.costEcoPoints,
+    required this.status,
+  });
+
+  factory Redemption.fromJson(Map<String, dynamic> json) {
+    return Redemption(
+      id: json['id'] as String,
+      rewardTitle: json['rewardTitle'] as String,
+      partnerName: json['partnerName'] as String,
+      voucherCode: json['voucherCode'] as String,
+      costEcoPoints: (json['costEcoPoints'] as num).toInt(),
+      status: json['status'] as String,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        rewardTitle,
+        partnerName,
+        voucherCode,
+        costEcoPoints,
+        status,
+      ];
+}
+
+class MobilityInsight extends Equatable {
+  final String id;
+  final String provider;
+  final String summary;
+
+  const MobilityInsight({
+    required this.id,
+    required this.provider,
+    required this.summary,
+  });
+
+  factory MobilityInsight.fromJson(Map<String, dynamic> json) {
+    return MobilityInsight(
+      id: json['id'] as String,
+      provider: json['provider'] as String,
+      summary: json['summary'] as String,
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, provider, summary];
+}

@@ -6,16 +6,19 @@ import 'package:provider/provider.dart';
 import 'core/auth/commuter_auth_gateway.dart';
 import 'core/models/trip.dart';
 import 'core/repositories/ecomove_api_repository.dart';
+import 'core/services/commuter_ai_service.dart';
 import 'core/services/location_queue_service.dart';
 import 'features/session/commuter_session_bloc.dart';
 import 'features/trips/trip_tracker_bloc.dart';
 
 void main() {
+  final apiRepo = HttpEcoMoveApiRepository();
   runApp(
     EcoMoveApp(
       authGateway: FirebaseRestCommuterAuthGateway(),
-      apiRepository: HttpEcoMoveApiRepository(),
+      apiRepository: apiRepo,
       locationQueueService: SqliteLocationQueueService(),
+      commuterAiService: ApiCommuterAiService(apiRepository: apiRepo),
     ),
   );
 }
@@ -24,22 +27,27 @@ class EcoMoveApp extends StatelessWidget {
   final CommuterAuthGateway authGateway;
   final EcoMoveApiRepository apiRepository;
   final LocationQueueService? locationQueueService;
+  final CommuterAiService? commuterAiService;
 
   const EcoMoveApp({
     super.key,
     required this.authGateway,
     required this.apiRepository,
     this.locationQueueService,
+    this.commuterAiService,
   });
 
   @override
   Widget build(BuildContext context) {
     final queueService = locationQueueService ?? SqliteLocationQueueService();
+    final aiService =
+        commuterAiService ?? ApiCommuterAiService(apiRepository: apiRepository);
     return MultiProvider(
       providers: [
         Provider<CommuterAuthGateway>.value(value: authGateway),
         Provider<EcoMoveApiRepository>.value(value: apiRepository),
         Provider<LocationQueueService>.value(value: queueService),
+        Provider<CommuterAiService>.value(value: aiService),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -53,6 +61,7 @@ class EcoMoveApp extends StatelessWidget {
             create: (context) => TripTrackerBloc(
               apiRepository: context.read<EcoMoveApiRepository>(),
               locationQueueService: context.read<LocationQueueService>(),
+              commuterAiService: context.read<CommuterAiService>(),
             ),
           ),
         ],
@@ -243,10 +252,13 @@ class CommuterHomeScreen extends StatefulWidget {
 class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
   int _selectedTabIndex = 0;
   final _joinCodeController = TextEditingController();
+  final _hazardDescriptionController = TextEditingController();
+  HazardCategory _selectedHazardCategory = HazardCategory.bikeLaneObstruction;
 
   @override
   void dispose() {
     _joinCodeController.dispose();
+    _hazardDescriptionController.dispose();
     super.dispose();
   }
 
@@ -282,8 +294,9 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
 
     return BlocConsumer<TripTrackerBloc, TripTrackerState>(
       listenWhen: (previous, current) =>
-          previous.lastCompletedTrip != current.lastCompletedTrip &&
-          current.lastCompletedTrip != null,
+          (previous.lastCompletedTrip != current.lastCompletedTrip &&
+              current.lastCompletedTrip != null) ||
+          previous.redemptions.length != current.redemptions.length,
       listener: (context, trackerState) {
         context
             .read<CommuterSessionBloc>()
@@ -322,6 +335,16 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
                 label: 'Mapa & Trajeto',
               ),
               NavigationDestination(
+                key: Key('nav_hazards_tab'),
+                icon: Icon(Icons.warning_amber_rounded),
+                label: 'Zeladoria',
+              ),
+              NavigationDestination(
+                key: Key('nav_rewards_tab'),
+                icon: Icon(Icons.card_giftcard_outlined),
+                label: 'Recompensas',
+              ),
+              NavigationDestination(
                 key: Key('nav_history_tab'),
                 icon: Icon(Icons.receipt_long_outlined),
                 label: 'Histórico & Extrato',
@@ -330,9 +353,12 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
           ),
           body: Padding(
             padding: const EdgeInsets.all(16),
-            child: _selectedTabIndex == 0
-                ? _buildMapAndTrackerTab(commuter, zone, trackerState)
-                : _buildHistoryAndLedgerTab(trackerState),
+            child: switch (_selectedTabIndex) {
+              0 => _buildMapAndTrackerTab(commuter, zone, trackerState),
+              1 => _buildHazardsTab(trackerState),
+              2 => _buildRewardsTab(commuter, trackerState),
+              _ => _buildHistoryAndLedgerTab(trackerState),
+            },
           ),
         );
       },
@@ -421,6 +447,28 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
                   ),
                 ],
               ),
+              if (trackerState.aiNudge != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  key: const Key('ai_nudge_banner'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFECFDF5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    trackerState.aiNudge!.summary,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF065F46),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -705,6 +753,208 @@ class _CommuterHomeScreenState extends State<CommuterHomeScreen> {
               ),
             ],
           ),
+      ],
+    );
+  }
+
+  Widget _buildHazardsTab(TripTrackerState trackerState) {
+    return ListView(
+      children: [
+        const Text(
+          'Zeladoria Urbana · Raio 30m ST_DWithin',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
+        DropdownButtonFormField<HazardCategory>(
+          initialValue: _selectedHazardCategory,
+          items: [
+            for (final cat in HazardCategory.values)
+              DropdownMenuItem(value: cat, child: Text(cat.labelPt)),
+          ],
+          onChanged: (cat) {
+            if (cat != null) setState(() => _selectedHazardCategory = cat);
+          },
+          decoration: const InputDecoration(
+            labelText: 'Categoria da Ocorrência',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          key: const Key('hazard_description_input'),
+          controller: _hazardDescriptionController,
+          decoration: const InputDecoration(
+            labelText: 'Descrição (Foto WebP < 300 KB)',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        FilledButton(
+          key: const Key('submit_hazard_button'),
+          onPressed: () {
+            context.read<TripTrackerBloc>().add(
+                  TripHazardSubmitRequested(
+                    idToken: widget.state.idToken,
+                    category: _selectedHazardCategory,
+                    description: _hazardDescriptionController.text.isEmpty
+                        ? 'Ciclovia obstruída próxima ao Bloco C'
+                        : _hazardDescriptionController.text,
+                    latitude: -23.4900,
+                    longitude: -47.4500,
+                  ),
+                );
+            _hazardDescriptionController.clear();
+          },
+          child: const Text('Reportar Ocorrência (+25 pts após aprovação)'),
+        ),
+        const SizedBox(height: 16),
+        for (final hazard in trackerState.hazards)
+          Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFCFCFB),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE7E7E4)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${hazard.category.labelPt} · ${hazard.endorsementCount} confirmações',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        hazard.description,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF6B6B6B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                OutlinedButton(
+                  key: Key('endorse_hazard_${hazard.id}'),
+                  onPressed: () {
+                    context.read<TripTrackerBloc>().add(
+                          TripHazardEndorseRequested(
+                            idToken: widget.state.idToken,
+                            hazardId: hazard.id,
+                          ),
+                        );
+                  },
+                  child: const Text('Confirmar (30m)'),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildRewardsTab(dynamic commuter, TripTrackerState trackerState) {
+    return ListView(
+      children: [
+        Text(
+          'Catálogo de Recompensas · Saldo: ${commuter.ecoPointsBalance} EcoPoints',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        for (final reward in trackerState.rewards)
+          Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFCFCFB),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE7E7E4)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${reward.partnerName} · ${reward.title}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        '${reward.costEcoPoints} EcoPoints · Estoque: ${reward.stock}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF6B6B6B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                FilledButton(
+                  key: Key('redeem_reward_${reward.id}'),
+                  onPressed: reward.stock > 0
+                      ? () {
+                          context.read<TripTrackerBloc>().add(
+                                TripRewardRedeemRequested(
+                                  idToken: widget.state.idToken,
+                                  rewardId: reward.id,
+                                ),
+                              );
+                        }
+                      : null,
+                  child: const Text('Resgatar'),
+                ),
+              ],
+            ),
+          ),
+        if (trackerState.redemptions.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          const Text(
+            'Meus Vouchers (Validade 7 Dias)',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          for (final redemption in trackerState.redemptions)
+            Container(
+              key: Key('voucher_${redemption.id}'),
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C1B1B),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${redemption.rewardTitle} (${redemption.partnerName})',
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                    ),
+                  ),
+                  Text(
+                    'Voucher: ${redemption.voucherCode}',
+                    style: const TextStyle(
+                      color: Color(0xFF6EE7B7),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ],
     );
   }

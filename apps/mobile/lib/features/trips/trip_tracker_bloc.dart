@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/models/trip.dart';
 import '../../core/repositories/ecomove_api_repository.dart';
+import '../../core/services/commuter_ai_service.dart';
 import '../../core/services/location_queue_service.dart';
 
 sealed class TripTrackerEvent extends Equatable {
@@ -77,6 +78,57 @@ final class TripCarpoolJoinRequested extends TripTrackerEvent {
   List<Object?> get props => [idToken, joinCode];
 }
 
+final class TripHazardSubmitRequested extends TripTrackerEvent {
+  final String idToken;
+  final HazardCategory category;
+  final String description;
+  final double latitude;
+  final double longitude;
+
+  const TripHazardSubmitRequested({
+    required this.idToken,
+    required this.category,
+    required this.description,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  List<Object?> get props => [
+        idToken,
+        category,
+        description,
+        latitude,
+        longitude,
+      ];
+}
+
+final class TripHazardEndorseRequested extends TripTrackerEvent {
+  final String idToken;
+  final String hazardId;
+
+  const TripHazardEndorseRequested({
+    required this.idToken,
+    required this.hazardId,
+  });
+
+  @override
+  List<Object?> get props => [idToken, hazardId];
+}
+
+final class TripRewardRedeemRequested extends TripTrackerEvent {
+  final String idToken;
+  final String rewardId;
+
+  const TripRewardRedeemRequested({
+    required this.idToken,
+    required this.rewardId,
+  });
+
+  @override
+  List<Object?> get props => [idToken, rewardId];
+}
+
 class TripTrackerState extends Equatable {
   final TransportMode selectedMode;
   final bool isRecording;
@@ -84,6 +136,10 @@ class TripTrackerState extends Equatable {
   final List<GpsCoordinate> bufferedCoordinates;
   final List<Trip> tripHistory;
   final List<PointTransaction> ledgerEntries;
+  final List<HazardReport> hazards;
+  final List<Reward> rewards;
+  final List<Redemption> redemptions;
+  final MobilityInsight? aiNudge;
   final Trip? lastCompletedTrip;
   final CarpoolSession? activeCarpoolSession;
   final String? errorMessage;
@@ -95,6 +151,10 @@ class TripTrackerState extends Equatable {
     this.bufferedCoordinates = const [],
     this.tripHistory = const [],
     this.ledgerEntries = const [],
+    this.hazards = const [],
+    this.rewards = const [],
+    this.redemptions = const [],
+    this.aiNudge,
     this.lastCompletedTrip,
     this.activeCarpoolSession,
     this.errorMessage,
@@ -107,6 +167,10 @@ class TripTrackerState extends Equatable {
     List<GpsCoordinate>? bufferedCoordinates,
     List<Trip>? tripHistory,
     List<PointTransaction>? ledgerEntries,
+    List<HazardReport>? hazards,
+    List<Reward>? rewards,
+    List<Redemption>? redemptions,
+    MobilityInsight? aiNudge,
     Trip? lastCompletedTrip,
     bool clearLastCompletedTrip = false,
     CarpoolSession? activeCarpoolSession,
@@ -121,6 +185,10 @@ class TripTrackerState extends Equatable {
       bufferedCoordinates: bufferedCoordinates ?? this.bufferedCoordinates,
       tripHistory: tripHistory ?? this.tripHistory,
       ledgerEntries: ledgerEntries ?? this.ledgerEntries,
+      hazards: hazards ?? this.hazards,
+      rewards: rewards ?? this.rewards,
+      redemptions: redemptions ?? this.redemptions,
+      aiNudge: aiNudge ?? this.aiNudge,
       lastCompletedTrip:
           clearLastCompletedTrip ? null : (lastCompletedTrip ?? this.lastCompletedTrip),
       activeCarpoolSession:
@@ -137,6 +205,10 @@ class TripTrackerState extends Equatable {
         bufferedCoordinates,
         tripHistory,
         ledgerEntries,
+        hazards,
+        rewards,
+        redemptions,
+        aiNudge,
         lastCompletedTrip,
         activeCarpoolSession,
         errorMessage,
@@ -146,10 +218,12 @@ class TripTrackerState extends Equatable {
 class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
   final EcoMoveApiRepository apiRepository;
   final LocationQueueService locationQueueService;
+  final CommuterAiService commuterAiService;
 
   TripTrackerBloc({
     required this.apiRepository,
     required this.locationQueueService,
+    required this.commuterAiService,
   }) : super(const TripTrackerState()) {
     on<TripHistoryLoadRequested>(_onHistoryLoadRequested);
     on<TripTransportModeSelected>(_onTransportModeSelected);
@@ -159,6 +233,9 @@ class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
     on<TripSummaryDismissed>(_onSummaryDismissed);
     on<TripCarpoolCreateRequested>(_onCarpoolCreateRequested);
     on<TripCarpoolJoinRequested>(_onCarpoolJoinRequested);
+    on<TripHazardSubmitRequested>(_onHazardSubmitRequested);
+    on<TripHazardEndorseRequested>(_onHazardEndorseRequested);
+    on<TripRewardRedeemRequested>(_onRewardRedeemRequested);
   }
 
   Future<void> _onHistoryLoadRequested(
@@ -169,11 +246,19 @@ class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
       final buffered = await locationQueueService.getBufferedPoints();
       final trips = await apiRepository.fetchMyTrips(event.idToken);
       final ledger = await apiRepository.fetchMyLedger(event.idToken);
+      final hazards = await apiRepository.fetchHazards(event.idToken);
+      final rewards = await apiRepository.fetchRewards(event.idToken);
+      final redemptions = await apiRepository.fetchMyRedemptions(event.idToken);
+      final nudge = await commuterAiService.fetchCommuterNudge(event.idToken);
       emit(
         state.copyWith(
           bufferedCoordinates: buffered,
           tripHistory: trips,
           ledgerEntries: ledger,
+          hazards: hazards,
+          rewards: rewards,
+          redemptions: redemptions,
+          aiNudge: nudge,
           clearErrorMessage: true,
         ),
       );
@@ -307,6 +392,78 @@ class TripTrackerBloc extends Bloc<TripTrackerEvent, TripTrackerState> {
       emit(
         state.copyWith(
           activeCarpoolSession: session,
+          clearErrorMessage: true,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: error.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onHazardSubmitRequested(
+    TripHazardSubmitRequested event,
+    Emitter<TripTrackerState> emit,
+  ) async {
+    try {
+      await apiRepository.submitHazardReport(
+        idToken: event.idToken,
+        category: event.category,
+        description: event.description,
+        latitude: event.latitude,
+        longitude: event.longitude,
+      );
+      final hazards = await apiRepository.fetchHazards(event.idToken);
+      emit(state.copyWith(hazards: hazards, clearErrorMessage: true));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: error.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onHazardEndorseRequested(
+    TripHazardEndorseRequested event,
+    Emitter<TripTrackerState> emit,
+  ) async {
+    try {
+      await apiRepository.endorseHazardReport(
+        idToken: event.idToken,
+        hazardId: event.hazardId,
+      );
+      final hazards = await apiRepository.fetchHazards(event.idToken);
+      emit(state.copyWith(hazards: hazards, clearErrorMessage: true));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: error.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onRewardRedeemRequested(
+    TripRewardRedeemRequested event,
+    Emitter<TripTrackerState> emit,
+  ) async {
+    try {
+      await apiRepository.redeemReward(
+        idToken: event.idToken,
+        rewardId: event.rewardId,
+      );
+      final rewards = await apiRepository.fetchRewards(event.idToken);
+      final redemptions = await apiRepository.fetchMyRedemptions(event.idToken);
+      final ledger = await apiRepository.fetchMyLedger(event.idToken);
+      emit(
+        state.copyWith(
+          rewards: rewards,
+          redemptions: redemptions,
+          ledgerEntries: ledger,
           clearErrorMessage: true,
         ),
       );
